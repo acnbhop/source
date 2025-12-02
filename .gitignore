@@ -1,0 +1,5 @@
+*.vs
+*.vscode
+*.vcxproj.user
+/game/bin/
+/objects/
