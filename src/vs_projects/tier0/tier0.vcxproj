@@ -40,17 +40,17 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -70,6 +70,16 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)game\bin</OutDir>
+    <IntDir>$(SolutionDir)objects\$(PlatformToolset)_$(Configuration)_$(Platform)\$(MSBuildProjectName)\</IntDir>
+    <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)game\bin</OutDir>
+    <IntDir>$(SolutionDir)objects\$(PlatformToolset)_$(Configuration)_$(Platform)\$(MSBuildProjectName)\</IntDir>
+    <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -102,6 +112,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>..\..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -116,6 +128,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>..\..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -123,22 +137,34 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="..\..\tier0\threadtools.inl" />
+    <None Include="..\..\tier0\tier0.vpc" />
+    <None Include="..\..\tier0\tier0_exclude.vpc" />
+    <None Include="..\..\tier0\tier0_staticlink.vpc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\..\tier0\DESKey\ALGO32.LIB" />
+    <Library Include="..\..\tier0\DESKey\DK2WIN32.LIB" />
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="..\..\tier0\annotations.h" />
     <ClInclude Include="..\..\tier0\basetypes.h" />
     <ClInclude Include="..\..\tier0\commonmacros.h" />
     <ClInclude Include="..\..\tier0\cpumonitoring.h" />
     <ClInclude Include="..\..\tier0\dbg.h" />
     <ClInclude Include="..\..\tier0\dbgflag.h" />
+    <ClInclude Include="..\..\tier0\DESKey\ALGO.H" />
+    <ClInclude Include="..\..\tier0\DESKey\DK2WIN32.H" />
     <ClInclude Include="..\..\tier0\dynfunction.h" />
     <ClInclude Include="..\..\tier0\etwprof.h" />
-    <ClInclude Include="..\..\tier0\EventMasks.h" />
-    <ClInclude Include="..\..\tier0\EventModes.h" />
+    <ClInclude Include="..\..\tier0\eventmasks.h" />
+    <ClInclude Include="..\..\tier0\eventmodes.h" />
     <ClInclude Include="..\..\tier0\extendedtrace.h" />
     <ClInclude Include="..\..\tier0\fasttimer.h" />
     <ClInclude Include="..\..\tier0\ia32detect.h" />
     <ClInclude Include="..\..\tier0\icommandline.h" />
-    <ClInclude Include="..\..\tier0\IOCTLCodes.h" />
-    <ClInclude Include="..\..\tier0\K8PerformanceCounters.h" />
+    <ClInclude Include="..\..\tier0\ioctlcodes.h" />
+    <ClInclude Include="..\..\tier0\k8performancecounters.h" />
     <ClInclude Include="..\..\tier0\l2cache.h" />
     <ClInclude Include="..\..\tier0\mem.h" />
     <ClInclude Include="..\..\tier0\memalloc.h" />
@@ -149,12 +175,12 @@
     <ClInclude Include="..\..\tier0\mem_helpers.h" />
     <ClInclude Include="..\..\tier0\mem_impl_type.h" />
     <ClInclude Include="..\..\tier0\minidump.h" />
-    <ClInclude Include="..\..\tier0\P4PerformanceCounters.h" />
-    <ClInclude Include="..\..\tier0\P5P6PerformanceCounters.h" />
+    <ClInclude Include="..\..\tier0\p4performancecounters.h" />
+    <ClInclude Include="..\..\tier0\p5p6performancecounters.h" />
     <ClInclude Include="..\..\tier0\pch_tier0.h" />
     <ClInclude Include="..\..\tier0\platform.h" />
     <ClInclude Include="..\..\tier0\pmc360.h" />
-    <ClInclude Include="..\..\tier0\PMELib.h" />
+    <ClInclude Include="..\..\tier0\pmelib.h" />
     <ClInclude Include="..\..\tier0\progressbar.h" />
     <ClInclude Include="..\..\tier0\protected_things.h" />
     <ClInclude Include="..\..\tier0\resource.h" />
@@ -185,13 +211,18 @@
     <ClCompile Include="..\..\tier0\commandline.cpp" />
     <ClCompile Include="..\..\tier0\cpu.cpp" />
     <ClCompile Include="..\..\tier0\cpumonitoring.cpp" />
-    <ClCompile Include="..\..\tier0\cpu_posix.cpp" />
     <ClCompile Include="..\..\tier0\cpu_usage.cpp" />
     <ClCompile Include="..\..\tier0\dbg.cpp" />
     <ClCompile Include="..\..\tier0\dynfunction.cpp" />
     <ClCompile Include="..\..\tier0\etwprof.cpp" />
     <ClCompile Include="..\..\tier0\extendedtrace.cpp" />
     <ClCompile Include="..\..\tier0\fasttimer.cpp" />
+    <ClCompile Include="..\..\tier0\linux\security_linux.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</DeploymentContent>
+    </ClCompile>
     <ClCompile Include="..\..\tier0\mem.cpp" />
     <ClCompile Include="..\..\tier0\memdbg.cpp" />
     <ClCompile Include="..\..\tier0\meminit.cpp" />
@@ -202,14 +233,34 @@
     <ClCompile Include="..\..\tier0\minidump.cpp" />
     <ClCompile Include="..\..\tier0\pch_tier0.cpp" />
     <ClCompile Include="..\..\tier0\platform.cpp" />
-    <ClCompile Include="..\..\tier0\platform_posix.cpp" />
-    <ClCompile Include="..\..\tier0\pmc360.cpp" />
     <ClCompile Include="..\..\tier0\pme.cpp" />
-    <ClCompile Include="..\..\tier0\PMELib.cpp" />
-    <ClCompile Include="..\..\tier0\pme_posix.cpp" />
+    <ClCompile Include="..\..\tier0\pmelib.cpp" />
+    <ClCompile Include="..\..\tier0\posix\cpu_posix.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="..\..\tier0\posix\platform_posix.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="..\..\tier0\posix\pme_posix.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="..\..\tier0\posix\vcrmode_posix.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</DeploymentContent>
+    </ClCompile>
     <ClCompile Include="..\..\tier0\progressbar.cpp" />
     <ClCompile Include="..\..\tier0\security.cpp" />
-    <ClCompile Include="..\..\tier0\security_linux.cpp" />
     <ClCompile Include="..\..\tier0\stacktools.cpp" />
     <ClCompile Include="..\..\tier0\systeminformation.cpp" />
     <ClCompile Include="..\..\tier0\thread.cpp" />
@@ -219,16 +270,44 @@
     <ClCompile Include="..\..\tier0\validator.cpp" />
     <ClCompile Include="..\..\tier0\valobject.cpp" />
     <ClCompile Include="..\..\tier0\vcrmode.cpp" />
-    <ClCompile Include="..\..\tier0\vcrmode_posix.cpp" />
-    <ClCompile Include="..\..\tier0\vcrmode_xbox.cpp" />
     <ClCompile Include="..\..\tier0\vprof.cpp" />
     <ClCompile Include="..\..\tier0\win32consoleio.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\tier0\threadtools.inl" />
-    <None Include="..\..\tier0\tier0.vpc" />
-    <None Include="..\..\tier0\tier0_exclude.vpc" />
-    <None Include="..\..\tier0\tier0_staticlink.vpc" />
+    <ClCompile Include="..\..\tier0\xbox\pmc360.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="..\..\tier0\xbox\vcrmode_xbox.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="..\..\tier0\xbox\xbox_console.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="..\..\tier0\xbox\xbox_profile.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="..\..\tier0\xbox\xbox_system.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="..\..\tier0\xbox\xbox_win32stubs.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</DeploymentContent>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\tier0\assert_dialog.rc" />

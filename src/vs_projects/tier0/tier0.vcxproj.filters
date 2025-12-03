@@ -13,6 +13,46 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Misc Files">
+      <UniqueIdentifier>{c5aaa104-40bb-4829-8e6a-3429c33e3b12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Link Libraries">
+      <UniqueIdentifier>{327b8aca-b7bc-4fea-8b5b-327c0f9cbe48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\xbox">
+      <UniqueIdentifier>{78c1489d-1024-4d8e-b727-5550fef566b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\posix">
+      <UniqueIdentifier>{9d1934c0-f80d-441e-ad8a-9c6aa44e2aa9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\linux">
+      <UniqueIdentifier>{21055258-ed23-4356-a3bb-dde51853f8bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\DESKey">
+      <UniqueIdentifier>{b0920f09-6c8c-4cc9-8e6e-fc945fb08078}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\tier0\tier0_exclude.vpc">
+      <Filter>VPC</Filter>
+    </None>
+    <None Include="..\..\tier0\tier0_staticlink.vpc">
+      <Filter>VPC</Filter>
+    </None>
+    <None Include="..\..\tier0\tier0.vpc">
+      <Filter>VPC</Filter>
+    </None>
+    <None Include="..\..\tier0\threadtools.inl">
+      <Filter>Header Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\..\tier0\DESKey\ALGO32.LIB">
+      <Filter>Link Libraries</Filter>
+    </Library>
+    <Library Include="..\..\tier0\DESKey\DK2WIN32.LIB">
+      <Filter>Link Libraries</Filter>
+    </Library>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\tier0\annotations.h">
@@ -39,10 +79,10 @@
     <ClInclude Include="..\..\tier0\etwprof.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\tier0\EventMasks.h">
+    <ClInclude Include="..\..\tier0\eventmasks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\tier0\EventModes.h">
+    <ClInclude Include="..\..\tier0\eventmodes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\tier0\extendedtrace.h">
@@ -57,10 +97,10 @@
     <ClInclude Include="..\..\tier0\icommandline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\tier0\IOCTLCodes.h">
+    <ClInclude Include="..\..\tier0\ioctlcodes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\tier0\K8PerformanceCounters.h">
+    <ClInclude Include="..\..\tier0\k8performancecounters.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\tier0\l2cache.h">
@@ -93,10 +133,10 @@
     <ClInclude Include="..\..\tier0\minidump.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\tier0\P4PerformanceCounters.h">
+    <ClInclude Include="..\..\tier0\p4performancecounters.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\tier0\P5P6PerformanceCounters.h">
+    <ClInclude Include="..\..\tier0\p5p6performancecounters.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\tier0\pch_tier0.h">
@@ -108,7 +148,7 @@
     <ClInclude Include="..\..\tier0\pmc360.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\tier0\PMELib.h">
+    <ClInclude Include="..\..\tier0\pmelib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\tier0\progressbar.h">
@@ -180,6 +220,12 @@
     <ClInclude Include="..\..\tier0\xbox_codeline_defines.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\tier0\DESKey\ALGO.H">
+      <Filter>Header Files\DESKey</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\tier0\DESKey\DK2WIN32.H">
+      <Filter>Header Files\DESKey</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\tier0\afxmem_override.cpp">
@@ -192,9 +238,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\tier0\cpu.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\tier0\cpu_posix.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\tier0\cpu_usage.cpp">
@@ -248,28 +291,16 @@
     <ClCompile Include="..\..\tier0\platform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\tier0\platform_posix.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\tier0\pmc360.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\tier0\pme.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\tier0\pme_posix.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\tier0\PMELib.cpp">
+    <ClCompile Include="..\..\tier0\pmelib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\tier0\progressbar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\tier0\security.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\tier0\security_linux.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\tier0\stacktools.cpp">
@@ -299,36 +330,49 @@
     <ClCompile Include="..\..\tier0\vcrmode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\tier0\vcrmode_posix.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\tier0\vcrmode_xbox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\tier0\vprof.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\tier0\win32consoleio.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\tier0\threadtools.inl">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="..\..\tier0\tier0_exclude.vpc">
-      <Filter>VPC</Filter>
-    </None>
-    <None Include="..\..\tier0\tier0_staticlink.vpc">
-      <Filter>VPC</Filter>
-    </None>
-    <None Include="..\..\tier0\tier0.vpc">
-      <Filter>VPC</Filter>
-    </None>
+    <ClCompile Include="..\..\tier0\linux\security_linux.cpp">
+      <Filter>Source Files\linux</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\tier0\posix\vcrmode_posix.cpp">
+      <Filter>Source Files\posix</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\tier0\posix\pme_posix.cpp">
+      <Filter>Source Files\posix</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\tier0\posix\platform_posix.cpp">
+      <Filter>Source Files\posix</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\tier0\posix\cpu_posix.cpp">
+      <Filter>Source Files\posix</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\tier0\xbox\xbox_win32stubs.cpp">
+      <Filter>Source Files\xbox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\tier0\xbox\xbox_system.cpp">
+      <Filter>Source Files\xbox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\tier0\xbox\xbox_profile.cpp">
+      <Filter>Source Files\xbox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\tier0\xbox\xbox_console.cpp">
+      <Filter>Source Files\xbox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\tier0\xbox\vcrmode_xbox.cpp">
+      <Filter>Source Files\xbox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\tier0\xbox\pmc360.cpp">
+      <Filter>Source Files\xbox</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\tier0\assert_dialog.rc">
-      <Filter>Source Files</Filter>
+      <Filter>VPC</Filter>
     </ResourceCompile>
   </ItemGroup>
 </Project>
