@@ -325,6 +325,9 @@
     <ProjectReference Include="..\tier1\tier1.vcxproj">
       <Project>{607dd900-0210-4bed-adce-c642053aa96d}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\tier2\tier2.vcxproj">
+      <Project>{8c682236-6edf-42c7-94c7-845fb706d386}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

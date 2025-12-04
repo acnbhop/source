@@ -15,7 +15,7 @@
 #define RIFF_H
 #pragma once
 
-#include "commonmacros.h"
+#include "tier0/commonmacros.h"
 
 
 //-----------------------------------------------------------------------------
