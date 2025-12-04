@@ -9,6 +9,16 @@
 #ifndef PLATFORM_H
 #define PLATFORM_H
 
+#if defined(_WIN32)
+#pragma comment(lib, "shell32.lib")
+#pragma comment(lib, "user32.lib")
+#pragma comment(lib, "advapi32.lib")
+#pragma comment(lib, "gdi32.lib")
+#pragma comment(lib, "comdlg32.lib")
+#pragma comment(lib, "ole32.lib")
+#pragma comment(lib, "wsock32.lib")
+#endif
+
 #if defined(_MSC_VER)
 #define COMPILER_MSVC 1
 #endif
