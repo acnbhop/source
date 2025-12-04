@@ -5,7 +5,7 @@
 // $NoKeywords: $
 //
 //=============================================================================//
-#include <quantize.h>
+#include <mathlib/quantize.h>
 #include <minmax.h>
 
 #define N_EXTRAVALUES 1

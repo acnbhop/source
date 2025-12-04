@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\mathlib\3dnow.h" />
+    <ClInclude Include="..\..\mathlib\amd3dx.h" />
+    <ClInclude Include="..\..\mathlib\anorms.h" />
+    <ClInclude Include="..\..\mathlib\bumpvects.h" />
+    <ClInclude Include="..\..\mathlib\compressed_3d_unitvec.h" />
+    <ClInclude Include="..\..\mathlib\compressed_light_cube.h" />
+    <ClInclude Include="..\..\mathlib\compressed_vector.h" />
+    <ClInclude Include="..\..\mathlib\halton.h" />
+    <ClInclude Include="..\..\mathlib\IceKey.H" />
+    <ClInclude Include="..\..\mathlib\lightdesc.h" />
+    <ClInclude Include="..\..\mathlib\mathlib.h" />
+    <ClInclude Include="..\..\mathlib\math_pfns.h" />
+    <ClInclude Include="..\..\mathlib\matrixmath.h" />
+    <ClInclude Include="..\..\mathlib\noise.h" />
+    <ClInclude Include="..\..\mathlib\noisedata.h" />
+    <ClInclude Include="..\..\mathlib\polyhedron.h" />
+    <ClInclude Include="..\..\mathlib\quantize.h" />
+    <ClInclude Include="..\..\mathlib\simdvectormatrix.h" />
+    <ClInclude Include="..\..\mathlib\spherical_geometry.h" />
+    <ClInclude Include="..\..\mathlib\sse.h" />
+    <ClInclude Include="..\..\mathlib\ssemath.h" />
+    <ClInclude Include="..\..\mathlib\ssequaternion.h" />
+    <ClInclude Include="..\..\mathlib\vector.h" />
+    <ClInclude Include="..\..\mathlib\vector2d.h" />
+    <ClInclude Include="..\..\mathlib\vector4d.h" />
+    <ClInclude Include="..\..\mathlib\vmatrix.h" />
+    <ClInclude Include="..\..\mathlib\vplane.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\mathlib\3dnow.cpp" />
+    <ClCompile Include="..\..\mathlib\almostequal.cpp" />
+    <ClCompile Include="..\..\mathlib\anorms.cpp" />
+    <ClCompile Include="..\..\mathlib\bumpvects.cpp" />
+    <ClCompile Include="..\..\mathlib\color_conversion.cpp" />
+    <ClCompile Include="..\..\mathlib\halton.cpp" />
+    <ClCompile Include="..\..\mathlib\IceKey.cpp" />
+    <ClCompile Include="..\..\mathlib\imagequant.cpp" />
+    <ClCompile Include="..\..\mathlib\lightdesc.cpp" />
+    <ClCompile Include="..\..\mathlib\mathlib_base.cpp" />
+    <ClCompile Include="..\..\mathlib\polyhedron.cpp" />
+    <ClCompile Include="..\..\mathlib\powsse.cpp" />
+    <ClCompile Include="..\..\mathlib\quantize.cpp" />
+    <ClCompile Include="..\..\mathlib\randsse.cpp" />
+    <ClCompile Include="..\..\mathlib\simdvectormatrix.cpp" />
+    <ClCompile Include="..\..\mathlib\sparse_convolution_noise.cpp" />
+    <ClCompile Include="..\..\mathlib\spherical.cpp" />
+    <ClCompile Include="..\..\mathlib\sse.cpp" />
+    <ClCompile Include="..\..\mathlib\sseconst.cpp" />
+    <ClCompile Include="..\..\mathlib\ssenoise.cpp" />
+    <ClCompile Include="..\..\mathlib\vector.cpp" />
+    <ClCompile Include="..\..\mathlib\vmatrix.cpp" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{1B17F511-41E2-4887-AE25-8C2B1E6A18A1}</ProjectGuid>
+    <RootNamespace>tier0</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)objects\$(PlatformToolset)_$(Configuration)_$(Platform)\$(MSBuildProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)objects\$(PlatformToolset)_$(Configuration)_$(Platform)\$(MSBuildProjectName)\</IntDir>
+    <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)objects\$(PlatformToolset)_$(Configuration)_$(Platform)\$(MSBuildProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)objects\$(PlatformToolset)_$(Configuration)_$(Platform)\$(MSBuildProjectName)\</IntDir>
+    <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>MATHLIB_LIB_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>..\..\;..\..\public;..\..\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>$(SolutionDir)src\tier0\platform.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/ignore:4221 /FORCE:MULTIPLE %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>MATHLIB_LIBNDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>..\..\;..\..\public;..\..\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>$(SolutionDir)src\tier0\platform.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/ignore:4221 /FORCE:MULTIPLE %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

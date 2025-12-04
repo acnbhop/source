@@ -4,8 +4,8 @@
 //
 //=====================================================================================//
 
-#include <ssemath.h>
-#include <lightdesc.h>
+#include <mathlib/ssemath.h>
+#include <mathlib/lightdesc.h>
 #include "mathlib.h"
 
 void LightDesc_t::RecalculateDerivedValues(void)

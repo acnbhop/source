@@ -322,6 +322,9 @@
     <ResourceCompile Include="..\..\tier0\assert_dialog.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\mathlib\mathlib.vcxproj">
+      <Project>{1b17f511-41e2-4887-ae25-8c2b1e6a18a1}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\tier1\tier1.vcxproj">
       <Project>{607dd900-0210-4bed-adce-c642053aa96d}</Project>
     </ProjectReference>

@@ -22,7 +22,7 @@
 // If debug build or ndebug and not already included MS custom alloc files, or already included this file
 #if (defined(_DEBUG) || !defined(_INC_CRTDBG)) || defined(MEMDBGON_H)
 
-#include "basetypes.h"
+#include "tier0/basetypes.h"
 #ifdef _WIN32
 #include <tchar.h>
 #else

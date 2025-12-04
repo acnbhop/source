@@ -14,7 +14,7 @@
 #endif
 
 #ifndef QUANTIZE_H
-#include <quantize.h>
+#include <mathlib/quantize.h>
 #endif
 
 #include <stdlib.h>

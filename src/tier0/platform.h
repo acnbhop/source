@@ -69,7 +69,7 @@
 #include <stdint.h>
 
 #include "wchartypes.h"
-#include "basetypes.h"
+#include "tier0/basetypes.h"
 #include "tier0/valve_off.h"
 
 #ifdef _DEBUG
