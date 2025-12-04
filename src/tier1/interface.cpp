@@ -17,7 +17,7 @@
 
 #include <stdio.h>
 #include "interface.h"
-#include "basetypes.h"
+#include "tier0/basetypes.h"
 #include "tier0/dbg.h"
 #include <string.h>
 #include <stdlib.h>

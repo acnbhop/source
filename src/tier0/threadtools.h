@@ -9,6 +9,10 @@
 #ifndef THREADTOOLS_H
 #define THREADTOOLS_H
 
+#if defined(_WIN32)
+#include <Windows.h>
+#endif
+
 #include <limits.h>
 
 #include "tier0/platform.h"

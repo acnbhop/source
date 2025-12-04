@@ -4,8 +4,8 @@
 //
 //=============================================================================//
 
-#include "basetypes.h"
-#include "commonmacros.h"
+#include "tier0/basetypes.h"
+#include "tier0/commonmacros.h"
 #include "checksum_crc.h"
 
 // memdbgon must be the last include file in a .cpp file!!!

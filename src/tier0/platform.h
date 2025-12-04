@@ -17,6 +17,9 @@
 #pragma comment(lib, "comdlg32.lib")
 #pragma comment(lib, "ole32.lib")
 #pragma comment(lib, "wsock32.lib")
+#if defined(TIER1_STATIC_LIB)
+#pragma comment(lib, "Rpcrt4.lib")
+#endif
 #endif
 
 #if defined(_MSC_VER)

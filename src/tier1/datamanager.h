@@ -10,6 +10,7 @@
 #pragma once
 #endif
 
+#include "tier0/platform.h"
 #include "tier0/threadtools.h"
 #include "utlmultilist.h"
 #include "utlvector.h"
@@ -26,6 +27,11 @@ public:
 	// -----------------------------------------------------------------------------
 	// memhandle_t			CreateResource( params ) // implemented by derived class
 	void					DestroyResource( memhandle_t handle );
+
+	// HACKHACK: Undefine UnlockResource macro if it exists
+#ifdef UnlockResource
+#undef UnlockResource
+#endif
 
 	// type-safe implementation in derived class
 	//void					*LockResource( memhandle_t handle );

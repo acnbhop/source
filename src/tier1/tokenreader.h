@@ -21,7 +21,7 @@
 #undef min
 #undef max
 #include <fstream>
-#include "valve_minmax_on.h"
+#include "tier0/valve_minmax_on.h"
 
 #ifdef _WIN32
 #pragma warning(pop)

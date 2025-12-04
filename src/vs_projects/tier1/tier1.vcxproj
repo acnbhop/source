@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\tier1\bitbuf.cpp" />
+    <ClCompile Include="..\..\tier1\byteswap.cpp" />
+    <ClCompile Include="..\..\tier1\characterset.cpp" />
+    <ClCompile Include="..\..\tier1\checksum_crc.cpp" />
+    <ClCompile Include="..\..\tier1\checksum_md5.cpp" />
+    <ClCompile Include="..\..\tier1\checksum_sha1.cpp" />
+    <ClCompile Include="..\..\tier1\commandbuffer.cpp" />
+    <ClCompile Include="..\..\tier1\convar.cpp" />
+    <ClCompile Include="..\..\tier1\datamanager.cpp" />
+    <ClCompile Include="..\..\tier1\diff.cpp" />
+    <ClCompile Include="..\..\tier1\fileio.cpp" />
+    <ClCompile Include="..\..\tier1\generichash.cpp" />
+    <ClCompile Include="..\..\tier1\ilocalize.cpp" />
+    <ClCompile Include="..\..\tier1\interface.cpp" />
+    <ClCompile Include="..\..\tier1\KeyValues.cpp" />
+    <ClCompile Include="..\..\tier1\keyvaluesjson.cpp" />
+    <ClCompile Include="..\..\tier1\kvpacker.cpp" />
+    <ClCompile Include="..\..\tier1\lzmaDecoder.cpp" />
+    <ClCompile Include="..\..\tier1\lzss.cpp" />
+    <ClCompile Include="..\..\tier1\mempool.cpp" />
+    <ClCompile Include="..\..\tier1\memstack.cpp" />
+    <ClCompile Include="..\..\tier1\NetAdr.cpp" />
+    <ClCompile Include="..\..\tier1\newbitbuf.cpp" />
+    <ClCompile Include="..\..\tier1\pathmatch.cpp" />
+    <ClCompile Include="..\..\tier1\processor_detect.cpp" />
+    <ClCompile Include="..\..\tier1\processor_detect_linux.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\tier1\qsort_s.cpp" />
+    <ClCompile Include="..\..\tier1\rangecheckedvar.cpp" />
+    <ClCompile Include="..\..\tier1\reliabletimer.cpp" />
+    <ClCompile Include="..\..\tier1\snappy-sinksource.cpp" />
+    <ClCompile Include="..\..\tier1\snappy-stubs-internal.cpp" />
+    <ClCompile Include="..\..\tier1\snappy.cpp" />
+    <ClCompile Include="..\..\tier1\sparsematrix.cpp" />
+    <ClCompile Include="..\..\tier1\splitstring.cpp" />
+    <ClCompile Include="..\..\tier1\stringpool.cpp" />
+    <ClCompile Include="..\..\tier1\strtools.cpp" />
+    <ClCompile Include="..\..\tier1\strtools_unicode.cpp" />
+    <ClCompile Include="..\..\tier1\tier1.cpp" />
+    <ClCompile Include="..\..\tier1\tokenreader.cpp" />
+    <ClCompile Include="..\..\tier1\undiff.cpp" />
+    <ClCompile Include="..\..\tier1\uniqueid.cpp" />
+    <ClCompile Include="..\..\tier1\utlbinaryblock.cpp" />
+    <ClCompile Include="..\..\tier1\utlbuffer.cpp" />
+    <ClCompile Include="..\..\tier1\utlbufferutil.cpp" />
+    <ClCompile Include="..\..\tier1\utlstring.cpp" />
+    <ClCompile Include="..\..\tier1\utlsymbol.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\tier1\bitbuf.h" />
+    <ClInclude Include="..\..\tier1\byteswap.h" />
+    <ClInclude Include="..\..\tier1\callqueue.h" />
+    <ClInclude Include="..\..\tier1\characterset.h" />
+    <ClInclude Include="..\..\tier1\checksum_crc.h" />
+    <ClInclude Include="..\..\tier1\checksum_md5.h" />
+    <ClInclude Include="..\..\tier1\checksum_sha1.h" />
+    <ClInclude Include="..\..\tier1\CommandBuffer.h" />
+    <ClInclude Include="..\..\tier1\convar.h" />
+    <ClInclude Include="..\..\tier1\convar_serverbounded.h" />
+    <ClInclude Include="..\..\tier1\datamanager.h" />
+    <ClInclude Include="..\..\tier1\delegates.h" />
+    <ClInclude Include="..\..\tier1\diff.h" />
+    <ClInclude Include="..\..\tier1\fileio.h" />
+    <ClInclude Include="..\..\tier1\fmtstr.h" />
+    <ClInclude Include="..\..\tier1\functors.h" />
+    <ClInclude Include="..\..\tier1\generichash.h" />
+    <ClInclude Include="..\..\tier1\iconvar.h" />
+    <ClInclude Include="..\..\tier1\ilocalize.h" />
+    <ClInclude Include="..\..\tier1\instancelog.h" />
+    <ClInclude Include="..\..\tier1\interface.h" />
+    <ClInclude Include="..\..\tier1\KeyValues.h" />
+    <ClInclude Include="..\..\tier1\keyvaluesjson.h" />
+    <ClInclude Include="..\..\tier1\kvpacker.h" />
+    <ClInclude Include="..\..\tier1\lzmaDecoder.h" />
+    <ClInclude Include="..\..\tier1\lzss.h" />
+    <ClInclude Include="..\..\tier1\memhelpers.h" />
+    <ClInclude Include="..\..\tier1\mempool.h" />
+    <ClInclude Include="..\..\tier1\memstack.h" />
+    <ClInclude Include="..\..\tier1\netadr.h" />
+    <ClInclude Include="..\..\tier1\passwordhash.h" />
+    <ClInclude Include="..\..\tier1\pathmatch_casefolding.h" />
+    <ClInclude Include="..\..\tier1\processor_detect.h" />
+    <ClInclude Include="..\..\tier1\rangecheckedvar.h" />
+    <ClInclude Include="..\..\tier1\refcount.h" />
+    <ClInclude Include="..\..\tier1\reliabletimer.h" />
+    <ClInclude Include="..\..\tier1\smartptr.h" />
+    <ClInclude Include="..\..\tier1\snappy-internal.h" />
+    <ClInclude Include="..\..\tier1\snappy-sinksource.h" />
+    <ClInclude Include="..\..\tier1\snappy-stubs-internal.h" />
+    <ClInclude Include="..\..\tier1\snappy-stubs-public.h" />
+    <ClInclude Include="..\..\tier1\snappy.h" />
+    <ClInclude Include="..\..\tier1\sparsematrix.h" />
+    <ClInclude Include="..\..\tier1\stringpool.h" />
+    <ClInclude Include="..\..\tier1\strtools.h" />
+    <ClInclude Include="..\..\tier1\thash.h" />
+    <ClInclude Include="..\..\tier1\tier1.h" />
+    <ClInclude Include="..\..\tier1\tokenreader.h" />
+    <ClInclude Include="..\..\tier1\uniqueid.h" />
+    <ClInclude Include="..\..\tier1\utlallocation.h" />
+    <ClInclude Include="..\..\tier1\utlarray.h" />
+    <ClInclude Include="..\..\tier1\utlbidirectionalset.h" />
+    <ClInclude Include="..\..\tier1\utlbinaryblock.h" />
+    <ClInclude Include="..\..\tier1\utlblockmemory.h" />
+    <ClInclude Include="..\..\tier1\utlbuffer.h" />
+    <ClInclude Include="..\..\tier1\utlbufferutil.h" />
+    <ClInclude Include="..\..\tier1\utlcommon.h" />
+    <ClInclude Include="..\..\tier1\utldelegate.h" />
+    <ClInclude Include="..\..\tier1\utldelegateimpl.h" />
+    <ClInclude Include="..\..\tier1\utldict.h" />
+    <ClInclude Include="..\..\tier1\utlenvelope.h" />
+    <ClInclude Include="..\..\tier1\utlfixedmemory.h" />
+    <ClInclude Include="..\..\tier1\utlflags.h" />
+    <ClInclude Include="..\..\tier1\utlhandletable.h" />
+    <ClInclude Include="..\..\tier1\utlhash.h" />
+    <ClInclude Include="..\..\tier1\utlhashdict.h" />
+    <ClInclude Include="..\..\tier1\utlhashtable.h" />
+    <ClInclude Include="..\..\tier1\utlintrusivelist.h" />
+    <ClInclude Include="..\..\tier1\utllinkedlist.h" />
+    <ClInclude Include="..\..\tier1\utlmap.h" />
+    <ClInclude Include="..\..\tier1\utlmemory.h" />
+    <ClInclude Include="..\..\tier1\utlmovingaverage.h" />
+    <ClInclude Include="..\..\tier1\utlmultilist.h" />
+    <ClInclude Include="..\..\tier1\utlntree.h" />
+    <ClInclude Include="..\..\tier1\utlobjectreference.h" />
+    <ClInclude Include="..\..\tier1\utlpair.h" />
+    <ClInclude Include="..\..\tier1\utlpriorityqueue.h" />
+    <ClInclude Include="..\..\tier1\utlqueue.h" />
+    <ClInclude Include="..\..\tier1\utlrbtree.h" />
+    <ClInclude Include="..\..\tier1\utlsoacontainer.h" />
+    <ClInclude Include="..\..\tier1\UtlSortVector.h" />
+    <ClInclude Include="..\..\tier1\utlstack.h" />
+    <ClInclude Include="..\..\tier1\utlstring.h" />
+    <ClInclude Include="..\..\tier1\UtlStringMap.h" />
+    <ClInclude Include="..\..\tier1\utlsymbol.h" />
+    <ClInclude Include="..\..\tier1\utlsymbollarge.h" />
+    <ClInclude Include="..\..\tier1\utltshash.h" />
+    <ClInclude Include="..\..\tier1\utlvector.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{607DD900-0210-4BED-ADCE-C642053AA96D}</ProjectGuid>
+    <RootNamespace>tier0</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)objects\$(PlatformToolset)_$(Configuration)_$(Platform)\$(MSBuildProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)objects\$(PlatformToolset)_$(Configuration)_$(Platform)\$(MSBuildProjectName)\</IntDir>
+    <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)objects\$(PlatformToolset)_$(Configuration)_$(Platform)\$(MSBuildProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)objects\$(PlatformToolset)_$(Configuration)_$(Platform)\$(MSBuildProjectName)\</IntDir>
+    <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>TIER1_STATIC_LIB;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>..\..\;..\..\public;..\..\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>$(SolutionDir)src\tier0\platform.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/ignore:4221 /FORCE:MULTIPLE %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>TIER1_STATIC_LIB;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>..\..\;..\..\public;..\..\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>$(SolutionDir)src\tier0\platform.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/ignore:4221 /FORCE:MULTIPLE %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

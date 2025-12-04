@@ -321,6 +321,11 @@
   <ItemGroup>
     <ResourceCompile Include="..\..\tier0\assert_dialog.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\tier1\tier1.vcxproj">
+      <Project>{607dd900-0210-4bed-adce-c642053aa96d}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
