@@ -74,7 +74,7 @@
 template <typename T>
 inline T AlignValue( T val, uintptr_t alignment )
 {
-	return (T)( ( (uintptr_t)val + alignment - 1 ) & ~( alignment - 1 ) );
+	return (T) (((uintptr_t) val + alignment - 1) & ~(alignment - 1));
 }
 
 
@@ -108,11 +108,11 @@ inline T AlignValue( T val, uintptr_t alignment )
 // lower-case) function can generate more expensive code because of the
 // mixed types involved.
 template< class T >
-T Clamp( T const &val, T const &minVal, T const &maxVal )
+T Clamp( T const& val, T const& minVal, T const& maxVal )
 {
-	if( val < minVal )
+	if (val < minVal)
 		return minVal;
-	else if( val > maxVal )
+	else if (val > maxVal)
 		return maxVal;
 	else
 		return val;
@@ -121,7 +121,7 @@ T Clamp( T const &val, T const &minVal, T const &maxVal )
 // This is the preferred Min operator. Using the MIN macro can lead to unexpected
 // side-effects or more expensive code.
 template< class T >
-T Min( T const &val1, T const &val2 )
+T Min( T const& val1, T const& val2 )
 {
 	return val1 < val2 ? val1 : val2;
 }
@@ -129,7 +129,7 @@ T Min( T const &val1, T const &val2 )
 // This is the preferred Max operator. Using the MAX macro can lead to unexpected
 // side-effects or more expensive code.
 template< class T >
-T Max( T const &val1, T const &val2 )
+T Max( T const& val1, T const& val2 )
 {
 	return val1 > val2 ? val1 : val2;
 }
@@ -183,13 +183,13 @@ typedef float vec_t;
 // MoeMod : fix reinterpret_cast UB - Maybe fail with strict alias
 union FloatCast_u
 {
-    vec_t f;
-    unsigned int i;
+	vec_t f;
+	unsigned int i;
 };
 
 inline unsigned int& FloatBits( vec_t& f )
 {
-	return reinterpret_cast<FloatCast_u *>(&f)->i;
+	return reinterpret_cast<FloatCast_u*>(&f)->i;
 }
 
 inline unsigned int const& FloatBits( vec_t const& f )
@@ -200,18 +200,18 @@ inline unsigned int const& FloatBits( vec_t const& f )
 inline vec_t BitsToFloat( unsigned int i )
 {
 	vec_t f;
-	memcpy( &f, &i, sizeof(f));
+	memcpy( &f, &i, sizeof( f ) );
 	return f;
 }
 
 inline bool IsFinite( vec_t f )
 {
-	return ((FloatBits(f) & 0x7F800000) != 0x7F800000);
+	return ((FloatBits( f ) & 0x7F800000) != 0x7F800000);
 }
 
 inline unsigned int FloatAbsBits( vec_t f )
 {
-	return FloatBits(f) & 0x7FFFFFFF;
+	return FloatBits( f ) & 0x7FFFFFFF;
 }
 
 // Given today's processors, I cannot think of any circumstance
@@ -220,19 +220,19 @@ inline unsigned int FloatAbsBits( vec_t f )
 #ifndef _In_
 #define _In_
 #endif
-extern "C" float fabsf(_In_ float);
+extern "C" float fabsf( _In_ float );
 #else
 #include <math.h>
 #endif
 
 inline float FloatMakeNegative( vec_t f )
 {
-	return -fabsf(f);
+	return -fabsf( f );
 }
 
 inline float FloatMakePositive( vec_t f )
 {
-	return fabsf(f);
+	return fabsf( f );
 }
 
 inline float FloatNegate( vec_t f )
@@ -256,12 +256,12 @@ struct color24
 
 typedef struct color32_s
 {
-	bool operator!=( const struct color32_s &other ) const;
+	bool operator!=( const struct color32_s& other ) const;
 
 	byte r, g, b, a;
 } color32;
 
-inline bool color32::operator!=( const color32 &other ) const
+inline bool color32::operator!=( const color32& other ) const
 {
 	return r != other.r || g != other.g || b != other.b || a != other.a;
 }
@@ -278,8 +278,8 @@ struct colorVec
 
 struct vrect_t
 {
-	int				x,y,width,height;
-	vrect_t			*pnext;
+	int				x, y, width, height;
+	vrect_t* pnext;
 };
 
 
@@ -288,7 +288,7 @@ struct vrect_t
 //-----------------------------------------------------------------------------
 struct Rect_t
 {
-    int x, y;
+	int x, y;
 	int width, height;
 };
 
@@ -314,14 +314,14 @@ template< class HandleType >
 class CBaseIntHandle
 {
 public:
-	
-	inline bool			operator==( const CBaseIntHandle &other )	{ return m_Handle == other.m_Handle; }
-	inline bool			operator!=( const CBaseIntHandle &other )	{ return m_Handle != other.m_Handle; }
+
+	inline bool			operator==( const CBaseIntHandle& other ) { return m_Handle == other.m_Handle; }
+	inline bool			operator!=( const CBaseIntHandle& other ) { return m_Handle != other.m_Handle; }
 
 	// Only the code that doles out these handles should use these functions.
 	// Everyone else should treat them as a transparent type.
-	inline HandleType	GetHandleValue()					{ return m_Handle; }
-	inline void			SetHandleValue( HandleType val )	{ m_Handle = val; }
+	inline HandleType	GetHandleValue() { return m_Handle; }
+	inline void			SetHandleValue( HandleType val ) { m_Handle = val; }
 
 	typedef HandleType	HANDLE_TYPE;
 

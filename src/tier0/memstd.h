@@ -76,11 +76,11 @@
 class ALIGN16 CSmallBlockPool
 {
 public:
-	void Init( unsigned nBlockSize, byte *pBase, unsigned initialCommit = 0 );
+	void Init( unsigned nBlockSize, byte* pBase, unsigned initialCommit = 0 );
 	size_t GetBlockSize();
-	bool IsOwner( void *p );
-	void *Alloc();
-	void Free( void *p );
+	bool IsOwner( void* p );
+	void* Alloc();
+	void Free( void* p );
 	int CountFreeBlocks();
 	int GetCommittedSize();
 	int CountCommittedBlocks();
@@ -93,7 +93,7 @@ private:
 	class CFreeList : public CTSListBase
 	{
 	public:
-		void Push( void *p ) { CTSListBase::Push( (TSLNodeBase_t *)p );	}
+		void Push( void* p ) { CTSListBase::Push( (TSLNodeBase_t*) p ); }
 	};
 
 	CFreeList		m_FreeList;
@@ -101,9 +101,9 @@ private:
 	unsigned		m_nBlockSize;
 
 	CInterlockedPtr<byte> m_pNextAlloc;
-	byte *			m_pCommitLimit;
-	byte *			m_pAllocLimit;
-	byte *			m_pBase;
+	byte* m_pCommitLimit;
+	byte* m_pAllocLimit;
+	byte* m_pBase;
 
 	CThreadFastMutex m_CommitMutex;
 } ALIGN16_POST;
@@ -114,22 +114,22 @@ class ALIGN16 CSmallBlockHeap
 public:
 	CSmallBlockHeap();
 	bool ShouldUse( size_t nBytes );
-	bool IsOwner( void * p );
-	void *Alloc( size_t nBytes );
-	void *Realloc( void *p, size_t nBytes );
-	void Free( void *p );
-	size_t GetSize( void *p );
-	void DumpStats( FILE *pFile = NULL );
+	bool IsOwner( void* p );
+	void* Alloc( size_t nBytes );
+	void* Realloc( void* p, size_t nBytes );
+	void Free( void* p );
+	size_t GetSize( void* p );
+	void DumpStats( FILE* pFile = NULL );
 	int Compact();
 
 private:
-	CSmallBlockPool *FindPool( size_t nBytes );
-	CSmallBlockPool *FindPool( void *p );
+	CSmallBlockPool* FindPool( size_t nBytes );
+	CSmallBlockPool* FindPool( void* p );
 
-	CSmallBlockPool *m_PoolLookup[MAX_SBH_BLOCK >> 2];
+	CSmallBlockPool* m_PoolLookup[MAX_SBH_BLOCK >> 2];
 	CSmallBlockPool m_Pools[NUM_POOLS];
-	byte *m_pBase;
-	byte *m_pLimit;
+	byte* m_pBase;
+	byte* m_pLimit;
 } ALIGN16_POST;
 
 #ifdef USE_PHYSICAL_SMALL_BLOCK_HEAP
@@ -140,20 +140,20 @@ class CX360SmallBlockPool
 public:
 	void Init( unsigned nBlockSize );
 	size_t GetBlockSize();
-	bool IsOwner( void *p );
-	void *Alloc();
-	void Free( void *p );
+	bool IsOwner( void* p );
+	void* Alloc();
+	void Free( void* p );
 	int CountFreeBlocks();
 	int GetCommittedSize();
 	int CountCommittedBlocks();
 	int CountAllocatedBlocks();
 
-	static CX360SmallBlockPool *FindPool( void *p )
+	static CX360SmallBlockPool* FindPool( void* p )
 	{
-		int index = (size_t)((byte *)p - gm_pPhysicalBase) / PAGESIZE_X360_SBH;
-		if ( index < 0 || index >= ARRAYSIZE(gm_AddressToPool) )
+		int index = (size_t) ((byte*) p - gm_pPhysicalBase) / PAGESIZE_X360_SBH;
+		if (index < 0 || index >= ARRAYSIZE( gm_AddressToPool ))
 			return NULL;
-		return gm_AddressToPool[ index ];
+		return gm_AddressToPool[index];
 	}
 
 private:
@@ -163,7 +163,7 @@ private:
 	class CFreeList : public CTSListBase
 	{
 	public:
-		void Push( void *p ) { CTSListBase::Push( (TSLNodeBase_t *)p );	}
+		void Push( void* p ) { CTSListBase::Push( (TSLNodeBase_t*) p ); }
 	};
 
 	CFreeList		m_FreeList;
@@ -172,15 +172,15 @@ private:
 	unsigned		m_CommittedSize;
 
 	CInterlockedPtr<byte> m_pNextAlloc;
-	byte *			m_pCurBlockEnd;
+	byte* m_pCurBlockEnd;
 
 	CThreadFastMutex m_CommitMutex;
 
-	static CX360SmallBlockPool *gm_AddressToPool[BYTES_X360_SBH/PAGESIZE_X360_SBH];
+	static CX360SmallBlockPool* gm_AddressToPool[BYTES_X360_SBH / PAGESIZE_X360_SBH];
 
-	static byte *gm_pPhysicalBlock;
-	static byte *gm_pPhysicalBase;
-	static byte *gm_pPhysicalLimit;
+	static byte* gm_pPhysicalBlock;
+	static byte* gm_pPhysicalBase;
+	static byte* gm_pPhysicalLimit;
 };
 
 
@@ -189,20 +189,20 @@ class CX360SmallBlockHeap
 public:
 	CX360SmallBlockHeap();
 	bool ShouldUse( size_t nBytes );
-	bool IsOwner( void * p );
-	void *Alloc( size_t nBytes );
-	void *Realloc( void *p, size_t nBytes );
-	void Free( void *p );
-	size_t GetSize( void *p );
-	void DumpStats( FILE *pFile = NULL );
+	bool IsOwner( void* p );
+	void* Alloc( size_t nBytes );
+	void* Realloc( void* p, size_t nBytes );
+	void Free( void* p );
+	size_t GetSize( void* p );
+	void DumpStats( FILE* pFile = NULL );
 
-	CSmallBlockHeap *GetStandardSBH();
+	CSmallBlockHeap* GetStandardSBH();
 
 private:
-	CX360SmallBlockPool *FindPool( size_t nBytes );
-	CX360SmallBlockPool *FindPool( void *p );
+	CX360SmallBlockPool* FindPool( size_t nBytes );
+	CX360SmallBlockPool* FindPool( void* p );
 
-	CX360SmallBlockPool *m_PoolLookup[MAX_SBH_BLOCK >> 2];
+	CX360SmallBlockPool* m_PoolLookup[MAX_SBH_BLOCK >> 2];
 	CX360SmallBlockPool m_Pools[NUM_POOLS];
 };
 #endif
@@ -212,68 +212,68 @@ class ALIGN16 CStdMemAlloc : public IMemAlloc
 {
 public:
 	CStdMemAlloc()
-	  :	m_pfnFailHandler( DefaultFailHandler ),
-		m_sMemoryAllocFailed( (size_t)0 )
+		: m_pfnFailHandler( DefaultFailHandler ),
+		m_sMemoryAllocFailed( (size_t) 0 )
 	{
 		// Make sure that we return 64-bit addresses in 64-bit builds.
 		ReserveBottomMemory();
 	}
 	// Release versions
-	virtual void *Alloc( size_t nSize );
-	virtual void *Realloc( void *pMem, size_t nSize );
-	virtual void  Free( void *pMem );
-    virtual void *Expand_NoLongerSupported( void *pMem, size_t nSize );
+	virtual void* Alloc( size_t nSize );
+	virtual void* Realloc( void* pMem, size_t nSize );
+	virtual void  Free( void* pMem );
+	virtual void* Expand_NoLongerSupported( void* pMem, size_t nSize );
 
 	// Debug versions
-    virtual void *Alloc( size_t nSize, const char *pFileName, int nLine );
-    virtual void *Realloc( void *pMem, size_t nSize, const char *pFileName, int nLine );
-    virtual void  Free( void *pMem, const char *pFileName, int nLine );
-    virtual void *Expand_NoLongerSupported( void *pMem, size_t nSize, const char *pFileName, int nLine );
+	virtual void* Alloc( size_t nSize, const char* pFileName, int nLine );
+	virtual void* Realloc( void* pMem, size_t nSize, const char* pFileName, int nLine );
+	virtual void  Free( void* pMem, const char* pFileName, int nLine );
+	virtual void* Expand_NoLongerSupported( void* pMem, size_t nSize, const char* pFileName, int nLine );
 
 	// Returns size of a particular allocation
-	virtual size_t GetSize( void *pMem );
+	virtual size_t GetSize( void* pMem );
 
-    // Force file + line information for an allocation
-    virtual void PushAllocDbgInfo( const char *pFileName, int nLine );
-    virtual void PopAllocDbgInfo();
+	// Force file + line information for an allocation
+	virtual void PushAllocDbgInfo( const char* pFileName, int nLine );
+	virtual void PopAllocDbgInfo();
 
 	virtual long CrtSetBreakAlloc( long lNewBreakAlloc );
 	virtual	int CrtSetReportMode( int nReportType, int nReportMode );
-	virtual int CrtIsValidHeapPointer( const void *pMem );
-	virtual int CrtIsValidPointer( const void *pMem, unsigned int size, int access );
+	virtual int CrtIsValidHeapPointer( const void* pMem );
+	virtual int CrtIsValidPointer( const void* pMem, unsigned int size, int access );
 	virtual int CrtCheckMemory( void );
 	virtual int CrtSetDbgFlag( int nNewFlag );
-	virtual void CrtMemCheckpoint( _CrtMemState *pState );
+	virtual void CrtMemCheckpoint( _CrtMemState* pState );
 	void* CrtSetReportFile( int nRptType, void* hFile );
 	void* CrtSetReportHook( void* pfnNewHook );
-	int CrtDbgReport( int nRptType, const char * szFile,
-			int nLine, const char * szModule, const char * pMsg );
+	int CrtDbgReport( int nRptType, const char* szFile,
+					  int nLine, const char* szModule, const char* pMsg );
 	virtual int heapchk();
 
 	virtual void DumpStats();
-	virtual void DumpStatsFileBase( char const *pchFileBase );
-	virtual void GlobalMemoryStatus( size_t *pUsedMemory, size_t *pFreeMemory );
+	virtual void DumpStatsFileBase( char const* pchFileBase );
+	virtual void GlobalMemoryStatus( size_t* pUsedMemory, size_t* pFreeMemory );
 
 	virtual bool IsDebugHeap() { return false; }
 
-	virtual void GetActualDbgInfo( const char *&pFileName, int &nLine ) {}
-	virtual void RegisterAllocation( const char *pFileName, int nLine, size_t nLogicalSize, size_t nActualSize, unsigned nTime ) {}
-	virtual void RegisterDeallocation( const char *pFileName, int nLine, size_t nLogicalSize, size_t nActualSize, unsigned nTime ) {}
+	virtual void GetActualDbgInfo( const char*& pFileName, int& nLine ) {}
+	virtual void RegisterAllocation( const char* pFileName, int nLine, size_t nLogicalSize, size_t nActualSize, unsigned nTime ) {}
+	virtual void RegisterDeallocation( const char* pFileName, int nLine, size_t nLogicalSize, size_t nActualSize, unsigned nTime ) {}
 
 	virtual int GetVersion() { return MEMALLOC_VERSION; }
 
 	virtual void CompactHeap();
 
 	virtual MemAllocFailHandler_t SetAllocFailHandler( MemAllocFailHandler_t pfnMemAllocFailHandler );
-	size_t CallAllocFailHandler( size_t nBytes ) { return (*m_pfnFailHandler)( nBytes); }
+	size_t CallAllocFailHandler( size_t nBytes ) { return (*m_pfnFailHandler)(nBytes); }
 
 	virtual uint32 GetDebugInfoSize() { return 0; }
-	virtual void SaveDebugInfo( void *pvDebugInfo ) { }
-	virtual void RestoreDebugInfo( const void *pvDebugInfo ) {}	
-	virtual void InitDebugInfo( void *pvDebugInfo, const char *pchRootFileName, int nLine ) {}
+	virtual void SaveDebugInfo( void* pvDebugInfo ) {}
+	virtual void RestoreDebugInfo( const void* pvDebugInfo ) {}
+	virtual void InitDebugInfo( void* pvDebugInfo, const char* pchRootFileName, int nLine ) {}
 
 	static size_t DefaultFailHandler( size_t );
-	void DumpBlockStats( void *p ) {}
+	void DumpBlockStats( void* p ) {}
 #ifdef MEM_SBH_ENABLED
 	CSmallBlockHeap m_SmallBlockHeap;
 #ifdef USE_PHYSICAL_SMALL_BLOCK_HEAP
@@ -282,7 +282,7 @@ public:
 #endif
 
 #if defined( _MEMTEST )
-	virtual void SetStatsExtraInfo( const char *pMapName, const char *pComment );
+	virtual void SetStatsExtraInfo( const char* pMapName, const char* pComment );
 #endif
 
 	virtual size_t MemoryAllocFailed();

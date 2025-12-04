@@ -23,24 +23,24 @@ void InitPME( void )
 {
 	bool bInit = false;
 
-	PME *pPME = PME::Instance();
-	if ( pPME )
+	PME* pPME = PME::Instance();
+	if (pPME)
 	{
-		if ( pPME->GetVendor() != INTEL )
+		if (pPME->GetVendor() != INTEL)
 			return;
-		
-		if ( pPME->GetProcessorFamily() != PENTIUM4_FAMILY )
+
+		if (pPME->GetProcessorFamily() != PENTIUM4_FAMILY)
 			return;
-		
+
 		pPME->SetProcessPriority( ProcessPriorityHigh );
 
 		bInit = true;
 
-		DevMsg( 1, _T("PME Initialized.\n") );
+		DevMsg( 1, _T( "PME Initialized.\n" ) );
 	}
 	else
 	{
-		DevMsg( 1, _T("PME Uninitialized.\n") );
+		DevMsg( 1, _T( "PME Uninitialized.\n" ) );
 	}
 
 #ifdef VPROF_ENABLED
@@ -53,10 +53,10 @@ void InitPME( void )
 //-----------------------------------------------------------------------------
 void ShutdownPME( void )
 {
-	PME *pPME = PME::Instance();
-	if ( pPME )
+	PME* pPME = PME::Instance();
+	if (pPME)
 	{
-	   pPME->SetProcessPriority( ProcessPriorityNormal );
+		pPME->SetProcessPriority( ProcessPriorityNormal );
 	}
 
 #ifdef VPROF_ENABLED
@@ -88,7 +88,7 @@ CL2Cache::CL2Cache()
 //-----------------------------------------------------------------------------
 CL2Cache::~CL2Cache()
 {
-	if ( m_pL2CacheEvent )
+	if (m_pL2CacheEvent)
 	{
 		delete m_pL2CacheEvent;
 		m_pL2CacheEvent = NULL;
@@ -100,19 +100,19 @@ CL2Cache::~CL2Cache()
 //-----------------------------------------------------------------------------
 void CL2Cache::Start( void )
 {
-	if ( m_pL2CacheEvent )
+	if (m_pL2CacheEvent)
 	{
 		// Set this up to check for L2 cache misses.
 		m_pL2CacheEvent->eventMask->RD_2ndL_MISS = 1;
-		
+
 		// Set the event mask and set the capture mode. 
 //		m_pL2CacheEvent->SetCaptureMode( USR_Only );
 		m_pL2CacheEvent->SetCaptureMode( OS_and_USR );
-		
+
 		// That's it, now sw capture events
 		m_pL2CacheEvent->StopCounter();
 		m_pL2CacheEvent->ClearCounter();
-		
+
 		m_pL2CacheEvent->StartCounter();
 		m_i64Start = m_pL2CacheEvent->ReadCounter();
 	}
@@ -123,15 +123,15 @@ void CL2Cache::Start( void )
 //-----------------------------------------------------------------------------
 void CL2Cache::End( void )
 {
-	if ( m_pL2CacheEvent )
+	if (m_pL2CacheEvent)
 	{
 		// Stop the counter and find the delta.
 		m_i64End = m_pL2CacheEvent->ReadCounter();
 		int64 i64Delta = m_i64End - m_i64Start;
-		m_pL2CacheEvent->StopCounter(); 
-		
+		m_pL2CacheEvent->StopCounter();
+
 		// Save the delta for later query.
-		m_iL2CacheMissCount = ( int )i64Delta;
+		m_iL2CacheMissCount = (int) i64Delta;
 	}
 }
 
@@ -144,13 +144,13 @@ void CL2Cache::End( void )
 // Input:	validator -		Our global validator object
 //			pchName -		Our name (typically a member var in our container)
 //-----------------------------------------------------------------------------
-void CL2Cache::Validate( CValidator &validator, tchar *pchName )
+void CL2Cache::Validate( CValidator& validator, tchar* pchName )
 {
-	validator.Push( _T("CL2Cache"), this, pchName );
+	validator.Push( _T( "CL2Cache" ), this, pchName );
 
 	validator.ClaimMemory( m_pL2CacheEvent );
 
-	validator.Pop( );
+	validator.Pop();
 }
 #endif // DBGFLAG_VALIDATE
 

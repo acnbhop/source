@@ -15,7 +15,7 @@ typedef HMODULE LibraryHandle;
 #define LookupInLibraryHandle(handle, fn) GetProcAddress(handle, fn)
 #elif defined(POSIX)
 #include <dlfcn.h>
-typedef void *LibraryHandle;
+typedef void* LibraryHandle;
 #define LoadLibraryHandle(libname) dlopen(libname, RTLD_NOW)
 #define CloseLibraryHandle(handle) dlclose(handle)
 #define LookupInLibraryHandle(handle, fn) dlsym(handle, fn)
@@ -24,7 +24,7 @@ typedef void *LibraryHandle;
 #endif
 
 #if 1
-static inline void dbgdynfn(const char *fmt, ...) {}
+static inline void dbgdynfn( const char* fmt, ... ) {}
 #else
 #define dbgdynfn printf
 #endif
@@ -35,7 +35,7 @@ static inline void dbgdynfn(const char *fmt, ...) {}
 class CSharedLibraryCache
 {
 public:
-	static CSharedLibraryCache &GetCache()
+	static CSharedLibraryCache& GetCache()
 	{
 		static CSharedLibraryCache Singleton;
 		return Singleton;
@@ -43,53 +43,53 @@ public:
 
 	struct CSharedLibraryItem
 	{
-		CSharedLibraryItem(LibraryHandle handle, const char *name)
+		CSharedLibraryItem( LibraryHandle handle, const char* name )
 		{
 			m_handle = handle;
-			m_name = new char[strlen(name) + 1];
+			m_name = new char[strlen( name ) + 1];
 			m_next = NULL;
-			strcpy(m_name, name);
+			strcpy( m_name, name );
 		}
 
 		~CSharedLibraryItem()
 		{
-			dbgdynfn("CDynamicFunction: Closing library '%s' (%p)\n", m_name, (void *) m_handle);
-			CloseLibraryHandle(m_handle);
+			dbgdynfn( "CDynamicFunction: Closing library '%s' (%p)\n", m_name, (void*) m_handle );
+			CloseLibraryHandle( m_handle );
 			delete[] m_name;
 			delete m_next;
 		}
 
-		char *m_name;
-		CSharedLibraryItem *m_next;
+		char* m_name;
+		CSharedLibraryItem* m_next;
 		LibraryHandle m_handle;
 	};
 
-	CSharedLibraryCache() : m_pList(NULL) {}
+	CSharedLibraryCache() : m_pList( NULL ) {}
 	~CSharedLibraryCache() { CloseAllLibraries(); }
 
-	LibraryHandle GetHandle(const char *name)
+	LibraryHandle GetHandle( const char* name )
 	{
-		CSharedLibraryItem *item = GetCacheItem(name);
+		CSharedLibraryItem* item = GetCacheItem( name );
 		if (item == NULL)
 		{
-			LibraryHandle lib = LoadLibraryHandle(name);
-			dbgdynfn("CDynamicFunction: Loading library '%s' (%p)\n", name, (void *) lib);
+			LibraryHandle lib = LoadLibraryHandle( name );
+			dbgdynfn( "CDynamicFunction: Loading library '%s' (%p)\n", name, (void*) lib );
 			if (lib == NULL)
 				return NULL;
 
-			item = new CSharedLibraryItem(lib, name);
+			item = new CSharedLibraryItem( lib, name );
 			item->m_next = m_pList;
 			m_pList = item;
 		}
 		return item->m_handle;
 	}
 
-	void CloseLibrary(const char *name)
+	void CloseLibrary( const char* name )
 	{
-		CSharedLibraryItem *item = GetCacheItem(name);
+		CSharedLibraryItem* item = GetCacheItem( name );
 		if (item)
 		{
-			assert(item == m_pList);
+			assert( item == m_pList );
 			m_pList = item->m_next;
 			item->m_next = NULL;
 			delete item;
@@ -102,13 +102,13 @@ public:
 	}
 
 private:
-	CSharedLibraryItem *GetCacheItem(const char *name)
+	CSharedLibraryItem* GetCacheItem( const char* name )
 	{
-		CSharedLibraryItem *prev = NULL;
-		CSharedLibraryItem *item = m_pList;
+		CSharedLibraryItem* prev = NULL;
+		CSharedLibraryItem* item = m_pList;
 		while (item)
 		{
-			if (strcmp(item->m_name, name) == 0)
+			if (strcmp( item->m_name, name ) == 0)
 			{
 				// move this item to the front of the list, since there will
 				//  probably be a big pile of these lookups in a row
@@ -128,17 +128,17 @@ private:
 		return NULL;  // not found.
 	}
 
-	CSharedLibraryItem *m_pList;
+	CSharedLibraryItem* m_pList;
 };
 
-void *VoidFnPtrLookup_Tier0(const char *libname, const char *fn, void *fallback)
+void* VoidFnPtrLookup_Tier0( const char* libname, const char* fn, void* fallback )
 {
-	LibraryHandle lib = CSharedLibraryCache::GetCache().GetHandle(libname);
-	void *retval = NULL;
+	LibraryHandle lib = CSharedLibraryCache::GetCache().GetHandle( libname );
+	void* retval = NULL;
 	if (lib != NULL)
 	{
-		retval = LookupInLibraryHandle(lib, fn);
-		dbgdynfn("CDynamicFunction: Lookup of '%s' in '%s': %p\n", fn, libname, retval);
+		retval = LookupInLibraryHandle( lib, fn );
+		dbgdynfn( "CDynamicFunction: Lookup of '%s' in '%s': %p\n", fn, libname, retval );
 	}
 
 	if (retval == NULL)

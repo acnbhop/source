@@ -51,12 +51,12 @@ class Color;
 class IDbgLogger
 {
 public:
-	virtual void Init(const char *logfile) = 0;
-	virtual void Write(const char *data) = 0;
+	virtual void Init( const char* logfile ) = 0;
+	virtual void Write( const char* data ) = 0;
 	virtual void Disable() = 0;
 };
 
-PLATFORM_INTERFACE IDbgLogger *DebugLogger();
+PLATFORM_INTERFACE IDbgLogger* DebugLogger();
 
 //-----------------------------------------------------------------------------
 // Usage model for the Dbg library
@@ -185,7 +185,7 @@ enum SpewRetval_t
 };
 
 /* type of externally defined function used to display debug spew */
-typedef SpewRetval_t (*SpewOutputFunc_t)( SpewType_t spewType, const tchar *pMsg );
+typedef SpewRetval_t( *SpewOutputFunc_t )(SpewType_t spewType, const tchar* pMsg);
 
 /* Used to redirect spew output */
 DBG_INTERFACE void   SpewOutputFunc( SpewOutputFunc_t func );
@@ -194,10 +194,10 @@ DBG_INTERFACE void   SpewOutputFunc( SpewOutputFunc_t func );
 DBG_INTERFACE SpewOutputFunc_t GetSpewOutputFunc( void );
 
 /* This is the default spew fun, which is used if you don't specify one */
-DBG_INTERFACE SpewRetval_t DefaultSpewFunc( SpewType_t type, const tchar *pMsg );
+DBG_INTERFACE SpewRetval_t DefaultSpewFunc( SpewType_t type, const tchar* pMsg );
 
 /* Same as the default spew func, but returns SPEW_ABORT for asserts */
-DBG_INTERFACE SpewRetval_t DefaultSpewFuncAbortOnAsserts( SpewType_t type, const tchar *pMsg );
+DBG_INTERFACE SpewRetval_t DefaultSpewFuncAbortOnAsserts( SpewType_t type, const tchar* pMsg );
 
 /* Should be called only inside a SpewOutputFunc_t, returns groupname, level, color */
 DBG_INTERFACE const tchar* GetSpewOutputGroup( void );
@@ -211,31 +211,31 @@ DBG_INTERFACE bool   IsSpewActive( const tchar* pGroupName, int level );
 /* Used to display messages, should never be called directly. */
 DBG_INTERFACE void   _SpewInfo( SpewType_t type, const tchar* pFile, int line );
 DBG_INTERFACE SpewRetval_t   _SpewMessage( PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 1, 2 );
-DBG_INTERFACE SpewRetval_t   _DSpewMessage( const tchar *pGroupName, int level, PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 3, 4 );
-DBG_INTERFACE SpewRetval_t   ColorSpewMessage( SpewType_t type, const Color *pColor, PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 3, 4 );
+DBG_INTERFACE SpewRetval_t   _DSpewMessage( const tchar* pGroupName, int level, PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 3, 4 );
+DBG_INTERFACE SpewRetval_t   ColorSpewMessage( SpewType_t type, const Color* pColor, PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 3, 4 );
 DBG_INTERFACE void _ExitOnFatalAssert( const tchar* pFile, int line );
 DBG_INTERFACE bool ShouldUseNewAssertDialog();
 
 DBG_INTERFACE bool SetupWin32ConsoleIO();
 
 // Returns true if they want to break in the debugger.
-DBG_INTERFACE bool DoNewAssertDialog( const tchar *pFile, int line, const tchar *pExpression );
+DBG_INTERFACE bool DoNewAssertDialog( const tchar* pFile, int line, const tchar* pExpression );
 
 // Allows the assert dialogs to be turned off from code
 DBG_INTERFACE bool AreAllAssertsDisabled();
 DBG_INTERFACE void SetAllAssertsDisabled( bool bAssertsEnabled );
 
 // Provides a callback that is called on asserts regardless of spew levels
-typedef void (*AssertFailedNotifyFunc_t)( const char *pchFile, int nLine, const char *pchMessage );
+typedef void (*AssertFailedNotifyFunc_t)(const char* pchFile, int nLine, const char* pchMessage);
 DBG_INTERFACE void SetAssertFailedNotifyFunc( AssertFailedNotifyFunc_t func );
-DBG_INTERFACE void CallAssertFailedNotifyFunc( const char *pchFile, int nLine, const char *pchMessage );
+DBG_INTERFACE void CallAssertFailedNotifyFunc( const char* pchFile, int nLine, const char* pchMessage );
 
 /* True if -hushasserts was passed on command line. */
 DBG_INTERFACE bool HushAsserts();
 
 #if defined( USE_SDL )
-DBG_INTERFACE void SetAssertDialogParent( struct SDL_Window *window );
-DBG_INTERFACE struct SDL_Window * GetAssertDialogParent();
+DBG_INTERFACE void SetAssertDialogParent( struct SDL_Window* window );
+DBG_INTERFACE struct SDL_Window* GetAssertDialogParent();
 #endif
 
 /* Used to define macros, never use these directly. */
@@ -247,14 +247,14 @@ DBG_INTERFACE struct SDL_Window * GetAssertDialogParent();
 	// The unfortunate !! is necessary because otherwise /analyze is incapable of evaluating
 	// all of the logical expressions that the regular compiler can handle.
 	// Include _msg in the macro so that format errors in it are detected.
-	#define _AssertMsg( _exp, _msg, _executeExp, _bFatal ) do { __analysis_assume( !!(_exp) ); _msg; } while (0)
-	#define  _AssertMsgOnce( _exp, _msg, _bFatal ) do { __analysis_assume( !!(_exp) ); _msg; } while (0)
-	// Force asserts on for /analyze so that we get a __analysis_assume of all of the constraints.
-	#define DBGFLAG_ASSERT
-	#define DBGFLAG_ASSERTFATAL
-	#define DBGFLAG_ASSERTDEBUG
+#define _AssertMsg( _exp, _msg, _executeExp, _bFatal ) do { __analysis_assume( !!(_exp) ); _msg; } while (0)
+#define  _AssertMsgOnce( _exp, _msg, _bFatal ) do { __analysis_assume( !!(_exp) ); _msg; } while (0)
+// Force asserts on for /analyze so that we get a __analysis_assume of all of the constraints.
+#define DBGFLAG_ASSERT
+#define DBGFLAG_ASSERTFATAL
+#define DBGFLAG_ASSERTDEBUG
 #else
-	#define  _AssertMsg( _exp, _msg, _executeExp, _bFatal )	\
+#define  _AssertMsg( _exp, _msg, _executeExp, _bFatal )	\
 		do {																\
 			if (!(_exp)) 													\
 			{ 																\
@@ -276,7 +276,7 @@ DBG_INTERFACE struct SDL_Window * GetAssertDialogParent();
 			}																\
 		} while (0)
 
-	#define  _AssertMsgOnce( _exp, _msg, _bFatal ) \
+#define  _AssertMsgOnce( _exp, _msg, _bFatal ) \
 		do {																\
 			static bool fAsserted;											\
 			if (!fAsserted )												\
@@ -439,24 +439,24 @@ DBG_INTERFACE struct SDL_Window * GetAssertDialogParent();
 
 /* These are always compiled in */
 DBG_INTERFACE void Msg( PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 1, 2 );
-DBG_INTERFACE void DMsg( const tchar *pGroupName, int level, PRINTF_FORMAT_STRING const tchar *pMsg, ... ) FMTFUNCTION( 3, 4 );
-DBG_INTERFACE void MsgV( PRINTF_FORMAT_STRING const tchar *pMsg, va_list arglist );
+DBG_INTERFACE void DMsg( const tchar* pGroupName, int level, PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 3, 4 );
+DBG_INTERFACE void MsgV( PRINTF_FORMAT_STRING const tchar* pMsg, va_list arglist );
 
-DBG_INTERFACE void Warning( PRINTF_FORMAT_STRING const tchar *pMsg, ... ) FMTFUNCTION( 1, 2 );
-DBG_INTERFACE void DWarning( const tchar *pGroupName, int level, PRINTF_FORMAT_STRING const tchar *pMsg, ... ) FMTFUNCTION( 3, 4 );
-DBG_INTERFACE void WarningV( PRINTF_FORMAT_STRING const tchar *pMsg, va_list arglist );
+DBG_INTERFACE void Warning( PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 1, 2 );
+DBG_INTERFACE void DWarning( const tchar* pGroupName, int level, PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 3, 4 );
+DBG_INTERFACE void WarningV( PRINTF_FORMAT_STRING const tchar* pMsg, va_list arglist );
 
-DBG_INTERFACE void Log( PRINTF_FORMAT_STRING const tchar *pMsg, ... ) FMTFUNCTION( 1, 2 );
-DBG_INTERFACE void DLog( const tchar *pGroupName, int level, PRINTF_FORMAT_STRING const tchar *pMsg, ... ) FMTFUNCTION( 3, 4 );
-DBG_INTERFACE void LogV( PRINTF_FORMAT_STRING const tchar *pMsg, va_list arglist );
+DBG_INTERFACE void Log( PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 1, 2 );
+DBG_INTERFACE void DLog( const tchar* pGroupName, int level, PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 3, 4 );
+DBG_INTERFACE void LogV( PRINTF_FORMAT_STRING const tchar* pMsg, va_list arglist );
 
 #ifdef Error
 // p4.cpp does a #define Error Warning and in that case the Error prototype needs to
 // be consistent with the Warning prototype.
-DBG_INTERFACE void Error( PRINTF_FORMAT_STRING const tchar *pMsg, ... ) FMTFUNCTION( 1, 2 );
+DBG_INTERFACE void Error( PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 1, 2 );
 #else
-DBG_INTERFACE void NORETURN Error( PRINTF_FORMAT_STRING const tchar *pMsg, ... ) FMTFUNCTION( 1, 2 );
-DBG_INTERFACE void NORETURN ErrorV( PRINTF_FORMAT_STRING const tchar *pMsg, va_list arglist );
+DBG_INTERFACE void NORETURN Error( PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 1, 2 );
+DBG_INTERFACE void NORETURN ErrorV( PRINTF_FORMAT_STRING const tchar* pMsg, va_list arglist );
 
 #endif
 
@@ -464,15 +464,15 @@ DBG_INTERFACE void NORETURN ErrorV( PRINTF_FORMAT_STRING const tchar *pMsg, va_l
 
 inline void Msg( ... ) {}
 inline void DMsg( ... ) {}
-inline void MsgV( PRINTF_FORMAT_STRING const tchar *pMsg, va_list arglist ) {}
-inline void Warning( PRINTF_FORMAT_STRING const tchar *pMsg, ... ) {}
-inline void WarningV( PRINTF_FORMAT_STRING const tchar *pMsg, va_list arglist ) {}
+inline void MsgV( PRINTF_FORMAT_STRING const tchar* pMsg, va_list arglist ) {}
+inline void Warning( PRINTF_FORMAT_STRING const tchar* pMsg, ... ) {}
+inline void WarningV( PRINTF_FORMAT_STRING const tchar* pMsg, va_list arglist ) {}
 inline void DWarning( ... ) {}
 inline void Log( ... ) {}
 inline void DLog( ... ) {}
-inline void LogV( PRINTF_FORMAT_STRING const tchar *pMsg, va_list arglist ) {}
+inline void LogV( PRINTF_FORMAT_STRING const tchar* pMsg, va_list arglist ) {}
 inline void Error( ... ) {}
-inline void ErrorV( PRINTF_FORMAT_STRING const tchar *pMsg, va_list arglist ) {}
+inline void ErrorV( PRINTF_FORMAT_STRING const tchar* pMsg, va_list arglist ) {}
 
 #endif
 
@@ -494,38 +494,38 @@ inline void ErrorV( PRINTF_FORMAT_STRING const tchar *pMsg, va_list arglist ) {}
 /* A couple of super-common dynamic spew messages, here for convenience */
 /* These looked at the "developer" group */
 DBG_INTERFACE void DevMsg( int level, PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 2, 3 );
-DBG_INTERFACE void DevWarning( int level, PRINTF_FORMAT_STRING const tchar *pMsg, ... ) FMTFUNCTION( 2, 3 );
-DBG_INTERFACE void DevLog( int level, PRINTF_FORMAT_STRING const tchar *pMsg, ... ) FMTFUNCTION( 2, 3 );
+DBG_INTERFACE void DevWarning( int level, PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 2, 3 );
+DBG_INTERFACE void DevLog( int level, PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 2, 3 );
 
 /* default level versions (level 1) */
 DBG_OVERLOAD void DevMsg( PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 1, 2 );
-DBG_OVERLOAD void DevWarning( PRINTF_FORMAT_STRING const tchar *pMsg, ... ) FMTFUNCTION( 1, 2 );
-DBG_OVERLOAD void DevLog( PRINTF_FORMAT_STRING const tchar *pMsg, ... ) FMTFUNCTION( 1, 2 );
+DBG_OVERLOAD void DevWarning( PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 1, 2 );
+DBG_OVERLOAD void DevLog( PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 1, 2 );
 
 /* These looked at the "console" group */
 DBG_INTERFACE void ConColorMsg( int level, const Color& clr, PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 3, 4 );
 DBG_INTERFACE void ConMsg( int level, PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 2, 3 );
-DBG_INTERFACE void ConWarning( int level, PRINTF_FORMAT_STRING const tchar *pMsg, ... ) FMTFUNCTION( 2, 3 );
-DBG_INTERFACE void ConLog( int level, PRINTF_FORMAT_STRING const tchar *pMsg, ... ) FMTFUNCTION( 2, 3 );
+DBG_INTERFACE void ConWarning( int level, PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 2, 3 );
+DBG_INTERFACE void ConLog( int level, PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 2, 3 );
 
 /* default console version (level 1) */
 DBG_OVERLOAD void ConColorMsg( const Color& clr, PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 2, 3 );
 DBG_OVERLOAD void ConMsg( PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 1, 2 );
-DBG_OVERLOAD void ConWarning( PRINTF_FORMAT_STRING const tchar *pMsg, ... ) FMTFUNCTION( 1, 2 );
-DBG_OVERLOAD void ConLog( PRINTF_FORMAT_STRING const tchar *pMsg, ... ) FMTFUNCTION( 1, 2 );
+DBG_OVERLOAD void ConWarning( PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 1, 2 );
+DBG_OVERLOAD void ConLog( PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 1, 2 );
 
 /* developer console version (level 2) */
 DBG_INTERFACE void ConDColorMsg( const Color& clr, PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 2, 3 );
 DBG_INTERFACE void ConDMsg( PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 1, 2 );
-DBG_INTERFACE void ConDWarning( PRINTF_FORMAT_STRING const tchar *pMsg, ... ) FMTFUNCTION( 1, 2 );
-DBG_INTERFACE void ConDLog( PRINTF_FORMAT_STRING const tchar *pMsg, ... ) FMTFUNCTION( 1, 2 );
+DBG_INTERFACE void ConDWarning( PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 1, 2 );
+DBG_INTERFACE void ConDLog( PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 1, 2 );
 
 /* These looked at the "network" group */
 DBG_INTERFACE void NetMsg( int level, PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 2, 3 );
-DBG_INTERFACE void NetWarning( int level, PRINTF_FORMAT_STRING const tchar *pMsg, ... ) FMTFUNCTION( 2, 3 );
-DBG_INTERFACE void NetLog( int level, PRINTF_FORMAT_STRING const tchar *pMsg, ... ) FMTFUNCTION( 2, 3 );
+DBG_INTERFACE void NetWarning( int level, PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 2, 3 );
+DBG_INTERFACE void NetLog( int level, PRINTF_FORMAT_STRING const tchar* pMsg, ... ) FMTFUNCTION( 2, 3 );
 
-void ValidateSpew( class CValidator &validator );
+void ValidateSpew( class CValidator& validator );
 
 #else
 
@@ -540,7 +540,7 @@ inline void NetLog( ... ) {}
 
 #endif
 
-DBG_INTERFACE void COM_TimestampedLog( PRINTF_FORMAT_STRING char const *fmt, ... ) FMTFUNCTION( 1, 2 );
+DBG_INTERFACE void COM_TimestampedLog( PRINTF_FORMAT_STRING char const* fmt, ... ) FMTFUNCTION( 1, 2 );
 
 /* Code macros, debugger interface */
 
@@ -566,7 +566,7 @@ DBG_INTERFACE void COM_TimestampedLog( PRINTF_FORMAT_STRING char const *fmt, ...
 class CScopeMsg
 {
 public:
-	CScopeMsg( const char *pszScope )
+	CScopeMsg( const tchar* pszScope )
 	{
 		m_pszScope = pszScope;
 		Msg( "%s { ", pszScope );
@@ -575,7 +575,7 @@ public:
 	{
 		Msg( "} %s", m_pszScope );
 	}
-	const char *m_pszScope;
+	const tchar* m_pszScope;
 };
 #define SCOPE_MSG( msg ) CScopeMsg scopeMsg( msg )
 #else
@@ -598,10 +598,10 @@ public:
 // 3. You use assert_cast to verify it in the second DLL boundary (where it also could've been created).
 #ifdef _DEBUG
 template<typename DEST_POINTER_TYPE, typename SOURCE_POINTER_TYPE>
-inline DEST_POINTER_TYPE assert_cast(SOURCE_POINTER_TYPE* pSource)
+inline DEST_POINTER_TYPE assert_cast( SOURCE_POINTER_TYPE* pSource )
 {
-    Assert( static_cast<DEST_POINTER_TYPE>(pSource) == dynamic_cast<DEST_POINTER_TYPE>(pSource) );
-    return static_cast<DEST_POINTER_TYPE>(pSource);
+	Assert( static_cast<DEST_POINTER_TYPE>(pSource) == dynamic_cast<DEST_POINTER_TYPE>(pSource) );
+	return static_cast<DEST_POINTER_TYPE>(pSource);
 }
 #else
 #define assert_cast static_cast
@@ -619,15 +619,15 @@ DBG_INTERFACE void AssertValidStringPtr( const tchar* ptr, int maxchar = 0xFFFFF
 
 #ifdef DBGFLAG_ASSERT
 
-FORCEINLINE void AssertValidReadPtr( const void* ptr, int count = 1 )	    { _AssertValidReadPtr( (void*)ptr, count ); }
-FORCEINLINE void AssertValidWritePtr( const void* ptr, int count = 1 )		{ _AssertValidWritePtr( (void*)ptr, count ); }
-FORCEINLINE void AssertValidReadWritePtr( const void* ptr, int count = 1 )	{ _AssertValidReadWritePtr( (void*)ptr, count ); }
+FORCEINLINE void AssertValidReadPtr( const void* ptr, int count = 1 ) { _AssertValidReadPtr( (void*) ptr, count ); }
+FORCEINLINE void AssertValidWritePtr( const void* ptr, int count = 1 ) { _AssertValidWritePtr( (void*) ptr, count ); }
+FORCEINLINE void AssertValidReadWritePtr( const void* ptr, int count = 1 ) { _AssertValidReadWritePtr( (void*) ptr, count ); }
 
 #else
 
-FORCEINLINE void AssertValidReadPtr( const void* ptr, int count = 1 )			 { }
-FORCEINLINE void AssertValidWritePtr( const void* ptr, int count = 1 )		     { }
-FORCEINLINE void AssertValidReadWritePtr( const void* ptr, int count = 1 )	     { }
+FORCEINLINE void AssertValidReadPtr( const void* ptr, int count = 1 ) {}
+FORCEINLINE void AssertValidWritePtr( const void* ptr, int count = 1 ) {}
+FORCEINLINE void AssertValidReadWritePtr( const void* ptr, int count = 1 ) {}
 #define AssertValidStringPtr AssertValidReadPtr
 
 #endif
@@ -641,19 +641,19 @@ FORCEINLINE void AssertValidReadWritePtr( const void* ptr, int count = 1 )	     
 class CReentryGuard
 {
 public:
-	CReentryGuard(int *pSemaphore)
-	 : m_pSemaphore(pSemaphore)
+	CReentryGuard( int* pSemaphore )
+		: m_pSemaphore( pSemaphore )
 	{
 		++(*m_pSemaphore);
 	}
-	
+
 	~CReentryGuard()
 	{
 		--(*m_pSemaphore);
 	}
-	
+
 private:
-	int *m_pSemaphore;
+	int* m_pSemaphore;
 };
 
 #define ASSERT_NO_REENTRY() \
@@ -673,20 +673,20 @@ private:
 class CDbgFmtMsg
 {
 public:
-	CDbgFmtMsg(PRINTF_FORMAT_STRING const tchar *pszFormat, ...) FMTFUNCTION( 2, 3 )
-	{ 
+	CDbgFmtMsg( PRINTF_FORMAT_STRING const tchar* pszFormat, ... ) FMTFUNCTION( 2, 3 )
+	{
 		va_list arg_ptr;
 
-		va_start(arg_ptr, pszFormat);
-		_vsntprintf(m_szBuf, sizeof(m_szBuf)-1, pszFormat, arg_ptr);
-		va_end(arg_ptr);
+		va_start( arg_ptr, pszFormat );
+		vsnprintf( m_szBuf, sizeof( m_szBuf ) - 1, pszFormat, arg_ptr );
+		va_end( arg_ptr );
 
-		m_szBuf[sizeof(m_szBuf)-1] = 0;
+		m_szBuf[sizeof( m_szBuf ) - 1] = 0;
 	}
 
-	operator const tchar *() const				
-	{ 
-		return m_szBuf; 
+	operator const tchar* () const
+	{
+		return m_szBuf;
 	}
 
 private:
@@ -700,9 +700,9 @@ private:
 //
 #if defined( _WIN32 ) && !defined( _X360 )
 
-	#ifdef _DEBUG
-		#pragma comment(compiler)
-	#endif
+#ifdef _DEBUG
+#pragma comment(compiler)
+#endif
 
 #endif
 
@@ -717,108 +717,108 @@ template< class Type >
 class CDataWatcher
 {
 public:
-	const Type& operator=( const Type &val ) 
-	{ 
-		return Set( val ); 
+	const Type& operator=( const Type& val )
+	{
+		return Set( val );
 	}
-	
-	const Type& operator=( const CDataWatcher<Type> &val ) 
-	{ 
-		return Set( val.m_Value ); 
+
+	const Type& operator=( const CDataWatcher<Type>& val )
+	{
+		return Set( val.m_Value );
 	}
-	
-	const Type& Set( const Type &val )
+
+	const Type& Set( const Type& val )
 	{
 		// Put your breakpoint here
 		m_Value = val;
 		return m_Value;
 	}
-	
+
 	Type& GetForModify()
 	{
 		return m_Value;
 	}
-	
-	const Type& operator+=( const Type &val ) 
+
+	const Type& operator+=( const Type& val )
 	{
-		return Set( m_Value + val ); 
+		return Set( m_Value + val );
 	}
-	
-	const Type& operator-=( const Type &val ) 
+
+	const Type& operator-=( const Type& val )
 	{
-		return Set( m_Value - val ); 
+		return Set( m_Value - val );
 	}
-	
-	const Type& operator/=( const Type &val ) 
+
+	const Type& operator/=( const Type& val )
 	{
-		return Set( m_Value / val ); 
+		return Set( m_Value / val );
 	}
-	
-	const Type& operator*=( const Type &val ) 
+
+	const Type& operator*=( const Type& val )
 	{
-		return Set( m_Value * val ); 
+		return Set( m_Value * val );
 	}
-	
-	const Type& operator^=( const Type &val ) 
+
+	const Type& operator^=( const Type& val )
 	{
-		return Set( m_Value ^ val ); 
+		return Set( m_Value ^ val );
 	}
-	
-	const Type& operator|=( const Type &val ) 
+
+	const Type& operator|=( const Type& val )
 	{
-		return Set( m_Value | val ); 
+		return Set( m_Value | val );
 	}
-	
+
 	const Type& operator++()
 	{
 		return (*this += 1);
 	}
-	
+
 	Type operator--()
 	{
 		return (*this -= 1);
 	}
-	
+
 	Type operator++( int ) // postfix version..
 	{
 		Type val = m_Value;
 		(*this += 1);
 		return val;
 	}
-	
+
 	Type operator--( int ) // postfix version..
 	{
 		Type val = m_Value;
 		(*this -= 1);
 		return val;
 	}
-	
+
 	// For some reason the compiler only generates type conversion warnings for this operator when used like 
 	// CNetworkVarBase<unsigned tchar> = 0x1
 	// (it warns about converting from an int to an unsigned char).
 	template< class C >
-	const Type& operator&=( C val ) 
-	{ 
-		return Set( m_Value & val ); 
-	}
-	
-	operator const Type&() const 
+	const Type& operator&=( C val )
 	{
-		return m_Value; 
+		return Set( m_Value & val );
 	}
-	
-	const Type& Get() const 
+
+	operator const Type& () const
 	{
-		return m_Value; 
+		return m_Value;
 	}
-	
-	const Type* operator->() const 
+
+	const Type& Get() const
 	{
-		return &m_Value; 
+		return m_Value;
 	}
-	
+
+	const Type* operator->() const
+	{
+		return &m_Value;
+	}
+
 	Type m_Value;
-	
+
 };
 
 #else

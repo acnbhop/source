@@ -7,7 +7,7 @@
 
 #ifndef _PS3
 // this is defined in the .cpp for the PS3 to avoid introducing a dependency for files including the header
-CTHREADLOCALPTR(CThread) g_pCurThread;
+CTHREADLOCALPTR( CThread ) g_pCurThread;
 
 #define INLINE_ON_PS3
 #else
@@ -15,16 +15,16 @@ CTHREADLOCALPTR(CThread) g_pCurThread;
 #define INLINE_ON_PS3 inline
 #endif
 
-INLINE_ON_PS3 CThread::CThread() :	
+INLINE_ON_PS3 CThread::CThread() :
 #ifdef _WIN32
-m_hThread( NULL ),
-m_threadId( 0 ),
+	m_hThread( NULL ),
+	m_threadId( 0 ),
 #elif defined( _PS3 ) || defined(_POSIX)
-m_threadId( 0 ),
-m_threadZombieId( 0 ) ,
+	m_threadId( 0 ),
+	m_threadZombieId( 0 ),
 #endif
-m_result( 0 ),
-m_flags( 0 )
+	m_result( 0 ),
+	m_flags( 0 )
 {
 	m_szName[0] = 0;
 	m_NotSuspendedEvent.Set();
@@ -36,25 +36,25 @@ INLINE_ON_PS3 CThread::~CThread()
 {
 #ifdef MSVC
 	if (m_hThread)
-#elif defined(POSIX) && !defined( _PS3 )
-	if ( m_threadId )
-#endif
+	#elif defined(POSIX) && !defined( _PS3 )
+	if (m_threadId)
+	#endif
 	{
-		if ( IsAlive() )
+		if (IsAlive())
 		{
-			Msg( "Illegal termination of worker thread! Threads must negotiate an end to the thread before the CThread object is destroyed.\n" ); 
-#ifdef _WIN32
+			Msg( "Illegal termination of worker thread! Threads must negotiate an end to the thread before the CThread object is destroyed.\n" );
+		#ifdef _WIN32
 
 			DoNewAssertDialog( __FILE__, __LINE__, "Illegal termination of worker thread! Threads must negotiate an end to the thread before the CThread object is destroyed.\n" );
-#endif
-			if ( GetCurrentCThread() == this )
+		#endif
+			if (GetCurrentCThread() == this)
 			{
 				Stop(); // BUGBUG: Alfred - this doesn't make sense, this destructor fires from the hosting thread not the thread itself!!
 			}
 		}
 	}
 #if defined(POSIX) || defined( _PS3 )
-	if ( m_threadZombieId )
+	if (m_threadZombieId)
 	{
 		// just clean up zombie threads immediately (the destructor is fired from the hosting thread)
 		Join();
@@ -65,30 +65,30 @@ INLINE_ON_PS3 CThread::~CThread()
 
 //---------------------------------------------------------
 
-INLINE_ON_PS3 const char *CThread::GetName()
+INLINE_ON_PS3 const char* CThread::GetName()
 {
 	AUTO_LOCK( m_Lock );
-	if ( !m_szName[0] )
+	if (!m_szName[0])
 	{
-#if defined( _WIN32 )
-		_snprintf( m_szName, sizeof(m_szName) - 1, "Thread(%p/%p)", this, m_hThread );
-#elif defined( _PS3 )
-		snprintf( m_szName, sizeof(m_szName) - 1, "Thread(%p)", this );
-#elif defined( POSIX )
-		_snprintf( m_szName, sizeof(m_szName) - 1, "Thread(%p/0x%p)", this, (void*)m_threadId );
-#endif
-		m_szName[sizeof(m_szName) - 1] = 0;
+	#if defined( _WIN32 )
+		_snprintf( m_szName, sizeof( m_szName ) - 1, "Thread(%p/%p)", this, m_hThread );
+	#elif defined( _PS3 )
+		snprintf( m_szName, sizeof( m_szName ) - 1, "Thread(%p)", this );
+	#elif defined( POSIX )
+		_snprintf( m_szName, sizeof( m_szName ) - 1, "Thread(%p/0x%p)", this, (void*) m_threadId );
+	#endif
+		m_szName[sizeof( m_szName ) - 1] = 0;
 	}
 	return m_szName;
 }
 
 //---------------------------------------------------------
 
-INLINE_ON_PS3 void CThread::SetName(const char *pszName)
+INLINE_ON_PS3 void CThread::SetName( const char* pszName )
 {
 	AUTO_LOCK( m_Lock );
-	strncpy( m_szName, pszName, sizeof(m_szName) - 1 );
-	m_szName[sizeof(m_szName) - 1] = 0;
+	strncpy( m_szName, pszName, sizeof( m_szName ) - 1 );
+	m_szName[sizeof( m_szName ) - 1] = 0;
 }
 
 //-----------------------------------------------------
@@ -100,7 +100,7 @@ INLINE_ON_PS3 bool CThread::Start( unsigned nBytesStack, ThreadPriorityEnum_t nP
 {
 	AUTO_LOCK( m_Lock );
 
-	if ( IsAlive() )
+	if (IsAlive())
 	{
 		AssertMsg( 0, "Tried to create a thread that has already been created!" );
 		return false;
@@ -113,7 +113,7 @@ INLINE_ON_PS3 bool CThread::Start( unsigned nBytesStack, ThreadPriorityEnum_t nP
 #if defined( THREAD_PARENT_STACK_TRACE_ENABLED )
 	{
 		int iValidEntries = GetCallStack_Fast( init.ParentStackTrace, ARRAYSIZE( init.ParentStackTrace ), 0 );
-		for( int i = iValidEntries; i < ARRAYSIZE( init.ParentStackTrace ); ++i )
+		for (int i = iValidEntries; i < ARRAYSIZE( init.ParentStackTrace ); ++i)
 		{
 			init.ParentStackTrace[i] = NULL;
 		}
@@ -121,19 +121,19 @@ INLINE_ON_PS3 bool CThread::Start( unsigned nBytesStack, ThreadPriorityEnum_t nP
 #endif
 
 #ifdef _WIN32
-	m_hThread = (HANDLE)CreateThread( NULL,
-		nBytesStack,
-		(LPTHREAD_START_ROUTINE)GetThreadProc(),
-		new ThreadInit_t(init),
-		nBytesStack ? STACK_SIZE_PARAM_IS_A_RESERVATION : 0,
-		(LPDWORD)&m_threadId );
+	m_hThread = (HANDLE) CreateThread( NULL,
+									   nBytesStack,
+									   (LPTHREAD_START_ROUTINE) GetThreadProc(),
+									   new ThreadInit_t( init ),
+									   nBytesStack ? STACK_SIZE_PARAM_IS_A_RESERVATION : 0,
+									   (LPDWORD) &m_threadId );
 
-	if( nPriority != TP_PRIORITY_DEFAULT )
+	if (nPriority != TP_PRIORITY_DEFAULT)
 	{
 		SetThreadPriority( m_hThread, nPriority );
 	}
 
-	if ( !m_hThread )
+	if (!m_hThread)
 	{
 		AssertMsg1( 0, "Failed to create thread (error 0x%x)", GetLastError() );
 		return false;
@@ -141,7 +141,7 @@ INLINE_ON_PS3 bool CThread::Start( unsigned nBytesStack, ThreadPriorityEnum_t nP
 #elif PLATFORM_PS3
 	// On the PS3, a stack size of 0 doesn't imply a default stack size, so we need to force it to our
 	//		 own default size.
-	if ( nBytesStack == 0 )
+	if (nBytesStack == 0)
 	{
 		nBytesStack = PS3_SYS_PPU_THREAD_COMMON_STACK_SIZE;
 	}
@@ -154,14 +154,14 @@ INLINE_ON_PS3 bool CThread::Start( unsigned nBytesStack, ThreadPriorityEnum_t nP
 	// it should always be created as non-joinable (not specifying 
 	// SYS_PPU_THREAD_CREATE_JOINABLE). Otherwise, some resources are left 
 	// allocated after termination of the PPU thread as if memory leaks."
-	const char* threadName=m_szName;
-	if ( sys_ppu_thread_create( &m_threadId, 
-			(void(*)(uint64_t))GetThreadProc(), 
-			(uint64_t)(new ThreadInit_t( init )), 
-			nPriority, 
-			nBytesStack, 
-			SYS_PPU_THREAD_CREATE_JOINABLE  , 
-			threadName ) != CELL_OK )
+	const char* threadName = m_szName;
+	if (sys_ppu_thread_create( &m_threadId,
+							   (void(*)(uint64_t))GetThreadProc(),
+							   (uint64_t) (new ThreadInit_t( init )),
+							   nPriority,
+							   nBytesStack,
+							   SYS_PPU_THREAD_CREATE_JOINABLE,
+							   threadName ) != CELL_OK)
 	{
 		AssertMsg1( 0, "Failed to create thread (error 0x%x)", errno );
 		return false;
@@ -171,11 +171,11 @@ INLINE_ON_PS3 bool CThread::Start( unsigned nBytesStack, ThreadPriorityEnum_t nP
 #elif POSIX
 	pthread_attr_t attr;
 	pthread_attr_init( &attr );
-	pthread_attr_setstacksize( &attr, MAX( nBytesStack, 1024u*1024 ) );
+	pthread_attr_setstacksize( &attr, MAX( nBytesStack, 1024u * 1024 ) );
 	//lwss - fix memory leak here
 	m_threadInit = ThreadInit_t( init );
 	//if ( pthread_create( &m_threadId, &attr, (void *(*)(void *))GetThreadProc(), new ThreadInit_t( init ) ) != 0 )
-	if ( pthread_create( &m_threadId, &attr, (void *(*)(void *))GetThreadProc(), &m_threadInit ) != 0 )
+	if (pthread_create( &m_threadId, &attr, (void* (*)(void*))GetThreadProc(), &m_threadInit ) != 0)
 	//lwss end
 	{
 		AssertMsg1( 0, "Failed to create thread (error 0x%x)", GetLastError() );
@@ -186,36 +186,36 @@ INLINE_ON_PS3 bool CThread::Start( unsigned nBytesStack, ThreadPriorityEnum_t nP
 
 
 
-	if ( !WaitForCreateComplete( &createComplete ) )
+	if (!WaitForCreateComplete( &createComplete ))
 	{
 		Msg( "Thread failed to initialize\n" );
-#ifdef _WIN32
+	#ifdef _WIN32
 		CloseHandle( m_hThread );
 		m_hThread = NULL;
-#elif defined( _PS3 )
+	#elif defined( _PS3 )
 		m_threadEnd.Set();
 		m_threadId = NULL;
 		m_threadZombieId = 0;
-#endif
+	#endif
 
 		return false;
 	}
 
-	if ( !bInitSuccess )
+	if (!bInitSuccess)
 	{
 		Msg( "Thread failed to initialize\n" );
-#ifdef _WIN32
+	#ifdef _WIN32
 		CloseHandle( m_hThread );
 		m_hThread = NULL;
-#elif defined(POSIX) && !defined( _PS3 )
+	#elif defined(POSIX) && !defined( _PS3 )
 		m_threadId = 0;
 		m_threadZombieId = 0;
-#endif
+	#endif
 		return false;
 	}
 
 #ifdef _WIN32
-	if ( !m_hThread )
+	if (!m_hThread)
 	{
 		Msg( "Thread exited immediately\n" );
 	}
@@ -239,9 +239,9 @@ INLINE_ON_PS3 bool CThread::IsAlive()
 #ifdef _WIN32
 	DWORD dwExitCode;
 	return (
-		m_hThread 
-		&& GetExitCodeThread(m_hThread, &dwExitCode) 
-		&& dwExitCode == STILL_ACTIVE );
+		m_hThread
+		&& GetExitCodeThread( m_hThread, &dwExitCode )
+		&& dwExitCode == STILL_ACTIVE);
 #elif defined(POSIX)
 	return !!m_threadId;
 #endif
@@ -252,20 +252,20 @@ INLINE_ON_PS3 bool CThread::IsAlive()
 INLINE_ON_PS3 bool CThread::Join( unsigned timeout )
 {
 #ifdef _WIN32
-	if ( m_hThread )
-#elif defined(POSIX)
-	if ( m_threadId || m_threadZombieId )
-#endif
+	if (m_hThread)
+	#elif defined(POSIX)
+	if (m_threadId || m_threadZombieId)
+	#endif
 	{
-		AssertMsg(GetCurrentCThread() != this, _T("Thread cannot be joined with self"));
+		AssertMsg( GetCurrentCThread() != this, _T( "Thread cannot be joined with self" ) );
 
-#ifdef _WIN32
-		return ThreadJoin( (ThreadHandle_t)m_hThread, timeout );
-#elif defined(POSIX)
-		bool ret = ThreadJoin(  (ThreadHandle_t)(m_threadId ? m_threadId : m_threadZombieId), timeout );
+	#ifdef _WIN32
+		return ThreadJoin( (ThreadHandle_t) m_hThread, timeout );
+	#elif defined(POSIX)
+		bool ret = ThreadJoin( (ThreadHandle_t) (m_threadId ? m_threadId : m_threadZombieId), timeout );
 		m_threadZombieId = 0;
 		return ret;
-#endif
+	#endif
 	}
 	return true;
 }
@@ -275,9 +275,9 @@ INLINE_ON_PS3 bool CThread::Join( unsigned timeout )
 INLINE_ON_PS3 ThreadHandle_t CThread::GetThreadHandle()
 {
 #ifdef _WIN32
-	return (ThreadHandle_t)m_hThread;
+	return (ThreadHandle_t) m_hThread;
 #else
-	return (ThreadHandle_t)m_threadId;
+	return (ThreadHandle_t) m_threadId;
 #endif
 }
 
@@ -296,39 +296,39 @@ INLINE_ON_PS3 int CThread::GetResult()
 // Forcibly, abnormally, but relatively cleanly stop the thread
 //
 
-INLINE_ON_PS3 void CThread::Stop(int exitCode)
+INLINE_ON_PS3 void CThread::Stop( int exitCode )
 {
-	if ( !IsAlive() )
+	if (!IsAlive())
 		return;
 
-	if ( GetCurrentCThread() == this )
+	if (GetCurrentCThread() == this)
 	{
-#if !defined( _PS3 )
+	#if !defined( _PS3 )
 		m_result = exitCode;
-		if ( !( m_flags & SUPPORT_STOP_PROTOCOL ) )
+		if (!(m_flags & SUPPORT_STOP_PROTOCOL))
 		{
 			OnExit();
 			g_pCurThread = NULL;
 
-#ifdef _WIN32
+		#ifdef _WIN32
 			CloseHandle( m_hThread );
 			RemoveThreadHandleToIDMap( m_hThread );
 			m_hThread = NULL;
-#else
+		#else
 			m_threadId = 0;
 			m_threadZombieId = 0;
-#endif
+		#endif
 		}
 		else
 		{
 			throw exitCode;
 		}
-#else
-		AssertMsg( false, "Called CThread::Stop() for a platform that doesn't have it!\n");
-#endif
+	#else
+		AssertMsg( false, "Called CThread::Stop() for a platform that doesn't have it!\n" );
+	#endif
 	}
 	else
-		AssertMsg( 0, "Only thread can stop self: Use a higher-level protocol");
+		AssertMsg( 0, "Only thread can stop self: Use a higher-level protocol" );
 }
 
 //---------------------------------------------------------
@@ -337,7 +337,7 @@ INLINE_ON_PS3 void CThread::Stop(int exitCode)
 INLINE_ON_PS3 int CThread::GetPriority() const
 {
 #ifdef _WIN32
-	return GetThreadPriority(m_hThread);
+	return GetThreadPriority( m_hThread );
 #elif defined( _PS3 )
 	return ThreadGetPriority( (ThreadHandle_t) m_threadId );
 #elif defined(POSIX)
@@ -351,12 +351,12 @@ INLINE_ON_PS3 int CThread::GetPriority() const
 //---------------------------------------------------------
 
 // Set the priority
-INLINE_ON_PS3 bool CThread::SetPriority(int priority)
+INLINE_ON_PS3 bool CThread::SetPriority( int priority )
 {
 #ifdef WIN32
-	return ThreadSetPriority( (ThreadHandle_t)m_hThread, priority );
+	return ThreadSetPriority( (ThreadHandle_t) m_hThread, priority );
 #else
-	return ThreadSetPriority( (ThreadHandle_t)m_threadId, priority );
+	return ThreadSetPriority( (ThreadHandle_t) m_threadId, priority );
 #endif
 }
 
@@ -365,9 +365,9 @@ INLINE_ON_PS3 bool CThread::SetPriority(int priority)
 // Suspend a thread
 INLINE_ON_PS3 unsigned CThread::Suspend()
 {
-	AssertMsg( ThreadGetCurrentId() == (ThreadId_t)m_threadId, "Cannot call CThread::Suspend from outside thread" );
+	AssertMsg( ThreadGetCurrentId() == (ThreadId_t) m_threadId, "Cannot call CThread::Suspend from outside thread" );
 
-	if ( ThreadGetCurrentId() != (ThreadId_t)m_threadId )
+	if (ThreadGetCurrentId() != (ThreadId_t) m_threadId)
 	{
 		DebuggerBreakIfDebugging();
 	}
@@ -383,7 +383,7 @@ INLINE_ON_PS3 unsigned CThread::Suspend()
 
 INLINE_ON_PS3 unsigned CThread::Resume()
 {
-	if ( m_NotSuspendedEvent.Check() )
+	if (m_NotSuspendedEvent.Check())
 	{
 		DevWarning( "Called Resume() on a thread that is not suspended!\n" );
 	}
@@ -394,14 +394,14 @@ INLINE_ON_PS3 unsigned CThread::Resume()
 //---------------------------------------------------------
 
 // Force hard-termination of thread.  Used for critical failures.
-INLINE_ON_PS3 bool CThread::Terminate(int exitCode)
+INLINE_ON_PS3 bool CThread::Terminate( int exitCode )
 {
 #if defined( _X360 )
 	AssertMsg( 0, "Cannot terminate a thread on the Xbox!" );
 	return false;
 #elif defined( _WIN32 )
 	// I hope you know what you're doing!
-	if (!TerminateThread(m_hThread, exitCode))
+	if (!TerminateThread( m_hThread, exitCode ))
 		return false;
 	CloseHandle( m_hThread );
 	RemoveThreadHandleToIDMap( m_hThread );
@@ -425,7 +425,7 @@ INLINE_ON_PS3 bool CThread::Terminate(int exitCode)
 // CThread
 //
 
-INLINE_ON_PS3 CThread *CThread::GetCurrentCThread()
+INLINE_ON_PS3 CThread* CThread::GetCurrentCThread()
 {
 #ifdef _PS3
 	return GetCurThreadPS3();
@@ -445,7 +445,7 @@ INLINE_ON_PS3 CThread *CThread::GetCurrentCThread()
 INLINE_ON_PS3 void CThread::Yield()
 {
 #ifdef _WIN32
-	::Sleep(0);
+	::Sleep( 0 );
 #elif defined( _PS3 )
 	// sys_ppu_thread_yield doesn't seem to function properly, so sleep instead.
 	sys_timer_usleep( 60 );
@@ -463,7 +463,7 @@ INLINE_ON_PS3 void CThread::Yield()
 INLINE_ON_PS3 void CThread::Sleep( unsigned duration )
 {
 #ifdef _WIN32
-	::Sleep(duration);
+	::Sleep( duration );
 #elif defined (_PS3)
 	sys_timer_usleep( duration * 1000 );
 #elif defined(POSIX)
@@ -490,13 +490,13 @@ INLINE_ON_PS3 int CThread::Run()
 #endif // _PS3 
 
 // Called when the thread exits
-INLINE_ON_PS3 void CThread::OnExit() { }
+INLINE_ON_PS3 void CThread::OnExit() {}
 
 // Allow for custom start waiting
-INLINE_ON_PS3 bool CThread::WaitForCreateComplete( CThreadEvent *pEvent )
+INLINE_ON_PS3 bool CThread::WaitForCreateComplete( CThreadEvent* pEvent )
 {
 	// Force serialized thread creation...
-	if (!pEvent->Wait(60000))
+	if (!pEvent->Wait( 60000 ))
 	{
 		AssertMsg( 0, "Probably deadlock or failure waiting for thread to initialize." );
 		return false;
@@ -510,7 +510,7 @@ INLINE_ON_PS3 bool CThread::IsThreadRunning()
 	// ThreadIsThreadIdRunning() doesn't work on PS3 if the thread is in a zombie state
 	return m_eventTheadExit.Check();
 #else
-	return ThreadIsThreadIdRunning( (ThreadId_t)m_threadId );
+	return ThreadIsThreadIdRunning( (ThreadId_t) m_threadId );
 #endif
 }
 
@@ -520,20 +520,20 @@ INLINE_ON_PS3 CThread::ThreadProc_t CThread::GetThreadProc()
 	return ThreadProc;
 }
 
-INLINE_ON_PS3 void CThread::ThreadProcRunWithMinidumpHandler( void *pv )
+INLINE_ON_PS3 void CThread::ThreadProcRunWithMinidumpHandler( void* pv )
 {
-	ThreadInit_t *pInit = reinterpret_cast<ThreadInit_t*>(pv);
+	ThreadInit_t* pInit = reinterpret_cast<ThreadInit_t*>(pv);
 	pInit->pThread->m_result = pInit->pThread->Run();
 }
 
 #ifdef _WIN32
-unsigned long STDCALL CThread::ThreadProc(LPVOID pv)
+unsigned long STDCALL CThread::ThreadProc( LPVOID pv )
 #else
-INLINE_ON_PS3 void* CThread::ThreadProc(LPVOID pv)
+INLINE_ON_PS3 void* CThread::ThreadProc( LPVOID pv )
 #endif
 {
 // #if defined( POSIX ) || defined( _PS3 )
-	ThreadInit_t *pInit = reinterpret_cast<ThreadInit_t*>(pv);
+	ThreadInit_t* pInit = reinterpret_cast<ThreadInit_t*>(pv);
 // #else
 // 	std::auto_ptr<ThreadInit_t> pInit((ThreadInit_t *)pv);
 // #endif
@@ -544,7 +544,7 @@ INLINE_ON_PS3 void* CThread::ThreadProc(LPVOID pv)
 #endif
 	AllocateThreadID();
 
-	CThread *pThread = pInit->pThread;
+	CThread* pThread = pInit->pThread;
 #ifdef _PS3
 	SetCurThreadPS3( pThread );
 #else
@@ -560,11 +560,11 @@ INLINE_ON_PS3 void* CThread::ThreadProc(LPVOID pv)
 #endif
 
 	bool bInitSuccess = true;
-	if ( pInit->pfInitSuccess )
+	if (pInit->pfInitSuccess)
 		*(pInit->pfInitSuccess) = false;
 
 #ifdef _PS3 
-	*(pInit->pfInitSuccess) = pInit->pThread->Init();
+	* (pInit->pfInitSuccess) = pInit->pThread->Init();
 #else
 	try
 	{
@@ -578,34 +578,34 @@ INLINE_ON_PS3 void* CThread::ThreadProc(LPVOID pv)
 	}
 #endif // _PS3
 
-	if ( pInit->pfInitSuccess )
+	if (pInit->pfInitSuccess)
 		*(pInit->pfInitSuccess) = bInitSuccess;
 	pInit->pInitCompleteEvent->Set();
 	if (!bInitSuccess)
 		return 0;
 
-	if ( !Plat_IsInDebugSession() && (pInit->pThread->m_flags & SUPPORT_STOP_PROTOCOL) )
+	if (!Plat_IsInDebugSession() && (pInit->pThread->m_flags & SUPPORT_STOP_PROTOCOL))
 	{
-#ifndef _PS3
+	#ifndef _PS3
 		try
-#endif
+		#endif
 		{
 			pInit->pThread->m_result = pInit->pThread->Run();
 		}
 
-#ifndef _PS3
+	#ifndef _PS3
 		catch (...)
 		{
 		}
-#endif
+	#endif
 	}
 	else
 	{
-#if defined( _WIN32 )
+	#if defined( _WIN32 )
 		CatchAndWriteMiniDumpForVoidPtrFn( ThreadProcRunWithMinidumpHandler, pv, false );
-#else
+	#else
 		pInit->pThread->m_result = pInit->pThread->Run();
-#endif
+	#endif
 	}
 
 	pInit->pThread->OnExit();
@@ -639,12 +639,12 @@ INLINE_ON_PS3 void* CThread::ThreadProc(LPVOID pv)
 		sys_ppu_thread_exit( pInit->pThread->m_result );
 		// reacquire the lock in case thread exit didn't actually exit the thread, so that
 		// AUTO_LOCK won't double-unlock the lock (to keep it paired)
-		pThread->m_Lock.Lock(); 
+		pThread->m_Lock.Lock();
 	}
 #endif
 
 #if defined( POSIX )|| defined( _PS3 )
-	return (void*)(uintp)pInit->pThread->m_result;
+	return (void*) (uintp) pInit->pThread->m_result;
 #else
 	return pInit->pThread->m_result;
 #endif

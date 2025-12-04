@@ -24,12 +24,12 @@
 #define PvExpand _expand
 #endif
 
-enum 
+enum
 {
 	MAX_STACK_DEPTH = 32
 };
 
-static uint8 *s_pBuf = NULL;
+static uint8* s_pBuf = NULL;
 static int s_pBufStackDepth[MAX_STACK_DEPTH];
 static int s_nBufDepth = -1;
 static int s_nBufCurSize = 0;
@@ -38,11 +38,11 @@ static bool s_oomerror_called = false;
 
 void MemAllocOOMError( size_t nSize )
 {
-	if ( !s_oomerror_called )
+	if (!s_oomerror_called)
 	{
 		s_oomerror_called = true;
 
-		MinidumpUserStreamInfoAppend( "MemAllocOOMError: %u bytes\n", (uint)nSize );
+		MinidumpUserStreamInfoAppend( "MemAllocOOMError: %u bytes\n", (uint) nSize );
 
 		//$ TODO: Need a good error message here.
 		// A basic advice to try lowering texture settings is just most-likely to help users who are exhausting address
@@ -54,8 +54,8 @@ void MemAllocOOMError( size_t nSize )
 //-----------------------------------------------------------------------------
 // Other DLL-exported methods for particular kinds of memory
 //-----------------------------------------------------------------------------
-void *MemAllocScratch( int nMemSize )
-{	
+void* MemAllocScratch( int nMemSize )
+{
 	// Minimally allocate 1M scratch
 	if (s_nBufAllocSize < s_nBufCurSize + nMemSize)
 	{
@@ -67,12 +67,12 @@ void *MemAllocScratch( int nMemSize )
 
 		if (s_pBuf)
 		{
-			s_pBuf = (uint8*)PvRealloc( s_pBuf, s_nBufAllocSize );
-			Assert( s_pBuf );	
+			s_pBuf = (uint8*) PvRealloc( s_pBuf, s_nBufAllocSize );
+			Assert( s_pBuf );
 		}
 		else
 		{
-			s_pBuf = (uint8*)PvAlloc( s_nBufAllocSize );
+			s_pBuf = (uint8*) PvAlloc( s_nBufAllocSize );
 		}
 	}
 
@@ -93,7 +93,7 @@ void MemFreeScratch()
 }
 
 #ifdef POSIX
-void ZeroMemory( void *mem, size_t length )
+void ZeroMemory( void* mem, size_t length )
 {
 	memset( mem, 0x0, length );
 }

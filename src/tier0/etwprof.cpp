@@ -38,9 +38,9 @@
 #include "ValveETWProviderEvents.h"
 
 // Typedefs for use with GetProcAddress
-typedef ULONG (__stdcall *tEventRegister)( LPCGUID ProviderId, PENABLECALLBACK EnableCallback, PVOID CallbackContext, PREGHANDLE RegHandle);
-typedef ULONG (__stdcall *tEventWrite)( REGHANDLE RegHandle, PCEVENT_DESCRIPTOR EventDescriptor, ULONG UserDataCount, PEVENT_DATA_DESCRIPTOR UserData);
-typedef ULONG (__stdcall *tEventUnregister)( REGHANDLE RegHandle );
+typedef ULONG( __stdcall* tEventRegister )(LPCGUID ProviderId, PENABLECALLBACK EnableCallback, PVOID CallbackContext, PREGHANDLE RegHandle);
+typedef ULONG( __stdcall* tEventWrite )(REGHANDLE RegHandle, PCEVENT_DESCRIPTOR EventDescriptor, ULONG UserDataCount, PEVENT_DATA_DESCRIPTOR UserData);
+typedef ULONG( __stdcall* tEventUnregister )(REGHANDLE RegHandle);
 
 // Helper class to dynamically load Advapi32.dll, find the ETW functions, 
 // register the providers if possible, and get the performance counter frequency.
@@ -53,12 +53,12 @@ public:
 
 		// Find Advapi32.dll. This should always succeed.
 		HMODULE pAdvapiDLL = LoadLibraryW( L"Advapi32.dll" );
-		if ( pAdvapiDLL )
+		if (pAdvapiDLL)
 		{
 			// Try to find the ETW functions. This will fail on XP.
-			m_pEventRegister = ( tEventRegister )GetProcAddress( pAdvapiDLL, "EventRegister" );
-			m_pEventWrite = ( tEventWrite )GetProcAddress( pAdvapiDLL, "EventWrite" );
-			m_pEventUnregister = ( tEventUnregister )GetProcAddress( pAdvapiDLL, "EventUnregister" );
+			m_pEventRegister = (tEventRegister) GetProcAddress( pAdvapiDLL, "EventRegister" );
+			m_pEventWrite = (tEventWrite) GetProcAddress( pAdvapiDLL, "EventWrite" );
+			m_pEventUnregister = (tEventUnregister) GetProcAddress( pAdvapiDLL, "EventUnregister" );
 
 			// Register two ETW providers. If registration fails then the event logging calls will fail.
 			// On XP these calls will do nothing.
@@ -105,7 +105,7 @@ public:
 // Redirector function for EventRegister. Called by macros in ValveETWProviderEvents.h
 ULONG EVNTAPI EventRegister( LPCGUID ProviderId, PENABLECALLBACK EnableCallback, PVOID CallbackContext, PREGHANDLE RegHandle )
 {
-	if ( g_ETWRegister.m_pEventRegister )
+	if (g_ETWRegister.m_pEventRegister)
 		return g_ETWRegister.m_pEventRegister( ProviderId, EnableCallback, CallbackContext, RegHandle );
 
 	// RegHandle is an _Out_ parameter and must always be initialized.
@@ -116,7 +116,7 @@ ULONG EVNTAPI EventRegister( LPCGUID ProviderId, PENABLECALLBACK EnableCallback,
 // Redirector function for EventWrite. Called by macros in ValveETWProviderEvents.h
 ULONG EVNTAPI EventWrite( REGHANDLE RegHandle, PCEVENT_DESCRIPTOR EventDescriptor, ULONG UserDataCount, PEVENT_DATA_DESCRIPTOR UserData )
 {
-	if ( g_ETWRegister.m_pEventWrite )
+	if (g_ETWRegister.m_pEventWrite)
 		return g_ETWRegister.m_pEventWrite( RegHandle, EventDescriptor, UserDataCount, UserData );
 	return 0;
 }
@@ -124,7 +124,7 @@ ULONG EVNTAPI EventWrite( REGHANDLE RegHandle, PCEVENT_DESCRIPTOR EventDescripto
 // Redirector function for EventUnregister. Called by macros in ValveETWProviderEvents.h
 ULONG EVNTAPI EventUnregister( REGHANDLE RegHandle )
 {
-	if ( g_ETWRegister.m_pEventUnregister )
+	if (g_ETWRegister.m_pEventUnregister)
 		return g_ETWRegister.m_pEventUnregister( RegHandle );
 	return 0;
 }
@@ -142,7 +142,7 @@ static int64 GetQPCTime()
 static float QPCToMS( int64 nDelta )
 {
 	// Convert from a QPC delta to seconds.
-	float flSeconds = ( float )( nDelta / double( g_ETWRegister.m_frequency.QuadPart ) );
+	float flSeconds = (float) (nDelta / double( g_ETWRegister.m_frequency.QuadPart ));
 
 	// Convert from seconds to milliseconds
 	return flSeconds * 1000;
@@ -150,14 +150,14 @@ static float QPCToMS( int64 nDelta )
 
 // Public functions for emitting ETW events.
 
-int64 ETWMark( const char *pMessage )
+int64 ETWMark( const char* pMessage )
 {
 	int64 nTime = GetQPCTime();
 	EventWriteMark( pMessage );
 	return nTime;
 }
 
-void ETWMarkPrintf( const char *pMessage, ... )
+void ETWMarkPrintf( const char* pMessage, ... )
 {
 	// If we are running on Windows XP or if our providers have not been enabled
 	// (by xperf or other) then this will be false and we can early out.
@@ -165,7 +165,7 @@ void ETWMarkPrintf( const char *pMessage, ... )
 	// worth checking if there is some cost beyond the EventWrite that we can
 	// avoid -- the redirectors in this file guarantee that EventWrite is always
 	// safe to call.
-	if ( !VALVE_MAIN_Context.IsEnabled )
+	if (!VALVE_MAIN_Context.IsEnabled)
 	{
 		return;
 	}
@@ -179,52 +179,52 @@ void ETWMarkPrintf( const char *pMessage, ... )
 	EventWriteMark( buffer );
 }
 
-void ETWMark1F( const char *pMessage, float data1 )
+void ETWMark1F( const char* pMessage, float data1 )
 {
 	EventWriteMark1F( pMessage, data1 );
 }
 
-void ETWMark2F( const char *pMessage, float data1, float data2 )
+void ETWMark2F( const char* pMessage, float data1, float data2 )
 {
 	EventWriteMark2F( pMessage, data1, data2 );
 }
 
-void ETWMark3F( const char *pMessage, float data1, float data2, float data3 )
+void ETWMark3F( const char* pMessage, float data1, float data2, float data3 )
 {
 	EventWriteMark3F( pMessage, data1, data2, data3 );
 }
 
-void ETWMark4F( const char *pMessage, float data1, float data2, float data3, float data4 )
+void ETWMark4F( const char* pMessage, float data1, float data2, float data3, float data4 )
 {
 	EventWriteMark4F( pMessage, data1, data2, data3, data4 );
 }
 
-void ETWMark1I( const char *pMessage, int data1 )
+void ETWMark1I( const char* pMessage, int data1 )
 {
 	EventWriteMark1I( pMessage, data1 );
 }
 
-void ETWMark2I( const char *pMessage, int data1, int data2 )
+void ETWMark2I( const char* pMessage, int data1, int data2 )
 {
 	EventWriteMark2I( pMessage, data1, data2 );
 }
 
-void ETWMark3I( const char *pMessage, int data1, int data2, int data3 )
+void ETWMark3I( const char* pMessage, int data1, int data2, int data3 )
 {
 	EventWriteMark3I( pMessage, data1, data2, data3 );
 }
 
-void ETWMark4I( const char *pMessage, int data1, int data2, int data3, int data4 )
+void ETWMark4I( const char* pMessage, int data1, int data2, int data3, int data4 )
 {
 	EventWriteMark4I( pMessage, data1, data2, data3, data4 );
 }
 
-void ETWMark1S( const char *pMessage, const char* data1 )
+void ETWMark1S( const char* pMessage, const char* data1 )
 {
 	EventWriteMark1S( pMessage, data1 );
 }
 
-void ETWMark2S( const char *pMessage, const char* data1, const char* data2 )
+void ETWMark2S( const char* pMessage, const char* data1, const char* data2 )
 {
 	EventWriteMark2S( pMessage, data1, data2 );
 }
@@ -233,9 +233,9 @@ void ETWMark2S( const char *pMessage, const char* data1, const char* data2 )
 // if we start emitting marks on multiple threads. Using __declspec(thread)
 // has some problems on Windows XP, but since these ETW functions only work
 // on Vista+ that doesn't matter.
-static __declspec( thread ) int s_nDepth;
+static __declspec(thread) int s_nDepth;
 
-int64 ETWBegin( const char *pMessage )
+int64 ETWBegin( const char* pMessage )
 {
 	// If we are running on Windows XP or if our providers have not been enabled
 	// (by xperf or other) then this will be false and we can early out.
@@ -245,7 +245,7 @@ int64 ETWBegin( const char *pMessage )
 	// safe to call.
 	// In this case we also avoid the potentially unreliable TLS implementation
 	// (for dynamically loaded DLLs) on Windows XP.
-	if ( !VALVE_MAIN_Context.IsEnabled )
+	if (!VALVE_MAIN_Context.IsEnabled)
 	{
 		return 0;
 	}
@@ -255,7 +255,7 @@ int64 ETWBegin( const char *pMessage )
 	return nTime;
 }
 
-int64 ETWEnd( const char *pMessage, int64 nStartTime )
+int64 ETWEnd( const char* pMessage, int64 nStartTime )
 {
 	// If we are running on Windows XP or if our providers have not been enabled
 	// (by xperf or other) then this will be false and we can early out.
@@ -265,7 +265,7 @@ int64 ETWEnd( const char *pMessage, int64 nStartTime )
 	// safe to call.
 	// In this case we also avoid the potentially unreliable TLS implementation
 	// (for dynamically loaded DLLs) on Windows XP.
-	if ( !VALVE_MAIN_Context.IsEnabled )
+	if (!VALVE_MAIN_Context.IsEnabled)
 	{
 		return 0;
 	}
@@ -295,12 +295,12 @@ void ETWRenderFrameMark( bool bIsServerProcess )
 
 	int64 nCurrentFrameTime = GetQPCTime();
 	float flElapsedFrameTime = 0.0f;
-	if ( s_nRenderFrameCount[bIsServerProcess] )
+	if (s_nRenderFrameCount[bIsServerProcess])
 	{
 		flElapsedFrameTime = QPCToMS( nCurrentFrameTime - s_lastFrameTime[bIsServerProcess] );
 	}
 
-	if ( bIsServerProcess )
+	if (bIsServerProcess)
 	{
 		EventWriteServerRenderFrameMark( s_nRenderFrameCount[bIsServerProcess], flElapsedFrameTime );
 	}
@@ -325,12 +325,12 @@ void ETWSimFrameMark( bool bIsServerProcess )
 
 	int64 nCurrentFrameTime = GetQPCTime();
 	float flElapsedFrameTime = 0.0f;
-	if ( s_nFrameCount[bIsServerProcess] )
+	if (s_nFrameCount[bIsServerProcess])
 	{
 		flElapsedFrameTime = QPCToMS( nCurrentFrameTime - s_lastFrameTime[bIsServerProcess] );
 	}
 
-	if ( bIsServerProcess )
+	if (bIsServerProcess)
 	{
 		EventWriteServerSimFrameMark( s_nFrameCount[bIsServerProcess], flElapsedFrameTime );
 	}
@@ -362,7 +362,7 @@ void ETWMouseMove( int nX, int nY )
 	// Only emit mouse-move events if the mouse position has changed, since
 	// otherwise source2 emits a continous stream of events which makes it
 	// harder to find 'real' mouse-move events.
-	if ( lastX != nX || lastY != nY )
+	if (lastX != nX || lastY != nY)
 	{
 		lastX = nX;
 		lastY = nY;
@@ -377,12 +377,12 @@ void ETWMouseWheel( int nWheelDelta, int nX, int nY )
 	EventWriteMouse_Wheel( nX, nY, nWheelDelta );
 }
 
-void ETWKeyDown( int nScanCode, int nVirtualCode, const char *pChar )
+void ETWKeyDown( int nScanCode, int nVirtualCode, const char* pChar )
 {
 	EventWriteKey_down( pChar, nScanCode, nVirtualCode );
 }
 
-void ETWSendPacket( const char *pTo, int nWireSize, int nOutSequenceNR, int nOutSequenceNrAck )
+void ETWSendPacket( const char* pTo, int nWireSize, int nOutSequenceNR, int nOutSequenceNrAck )
 {
 	static int s_nCumulativeWireSize;
 	s_nCumulativeWireSize += nWireSize;
@@ -395,7 +395,7 @@ void ETWThrottled()
 	EventWriteThrottled();
 }
 
-void ETWReadPacket( const char *pFrom, int nWireSize, int nInSequenceNR, int nOutSequenceNRAck )
+void ETWReadPacket( const char* pFrom, int nWireSize, int nInSequenceNR, int nOutSequenceNRAck )
 {
 	static int s_nCumulativeWireSize;
 	s_nCumulativeWireSize += nWireSize;

@@ -58,7 +58,7 @@
 
 #define tmTryLock(...)
 #define tmTryLockEx(...)
-    
+
 #define tmPlot(...)
 #define tmPlotF32(...)
 #define tmPlotF64(...)
@@ -80,5 +80,5 @@
 #define TM_CONTEXT_LITE(val) ((char*)(val))
 #define TM_CONTEXT_FULL(val) ((char*)(val))
 
-typedef char *HTELEMETRY;
+typedef char* HTELEMETRY;
 

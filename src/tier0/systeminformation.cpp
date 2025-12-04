@@ -21,17 +21,17 @@ extern "C" {
 #define PrivateType( xxx ) ValvePrivateType_##xxx
 
 	typedef enum { SystemPerformanceInformation = 2 }
-		PrivateType( SYSTEM_INFORMATION_CLASS );
+	PrivateType( SYSTEM_INFORMATION_CLASS );
 
 	typedef LONG PrivateType( NTSTATUS );
 
-	typedef PrivateType( NTSTATUS ) ( WINAPI * PrivateType( NtQuerySystemInformation ) )
+	typedef PrivateType( NTSTATUS ) (WINAPI* PrivateType( NtQuerySystemInformation ))
 		(
-		/*IN*/ PrivateType( SYSTEM_INFORMATION_CLASS ) SystemInformationClass,
-		/*OUT*/ PVOID SystemInformation,
-		/*IN*/ ULONG SystemInformationLength,
-		/*OUT*/ PULONG ReturnLength /*OPTIONAL*/
-		);
+			/*IN*/ PrivateType( SYSTEM_INFORMATION_CLASS ) SystemInformationClass,
+			/*OUT*/ PVOID SystemInformation,
+			/*IN*/ ULONG SystemInformationLength,
+			/*OUT*/ PULONG ReturnLength /*OPTIONAL*/
+			);
 
 	typedef struct
 	{
@@ -92,9 +92,9 @@ public:
 	bool IsInitialized() const;
 	SYSTEM_CALL_RESULT_t CallResult() const;
 
-	SYSTEM_CALL_RESULT_t InitializeLoadModule( _TCHAR *pszModule, char *pszFunction );
-	SYSTEM_CALL_RESULT_t InitializeFindModule( _TCHAR *pszModule, char *pszFunction );
-	SYSTEM_CALL_RESULT_t InitializeFindProc( HMODULE hModule, char *pszFunction );
+	SYSTEM_CALL_RESULT_t InitializeLoadModule( const _TCHAR* pszModule, const char* pszFunction );
+	SYSTEM_CALL_RESULT_t InitializeFindModule( const _TCHAR* pszModule, const char* pszFunction );
+	SYSTEM_CALL_RESULT_t InitializeFindProc( HMODULE hModule, const char* pszFunction );
 
 	void SetFailed( SYSTEM_CALL_RESULT_t eResult );
 	void Reset();
@@ -112,15 +112,15 @@ protected:
 
 struct CSysCallCacheEntry_LoadModule : public CSysCallCacheEntry
 {
-	CSysCallCacheEntry_LoadModule( _TCHAR *pszModule, char *pszFunction ) { InitializeLoadModule( pszModule, pszFunction ); }
+	CSysCallCacheEntry_LoadModule( const _TCHAR* pszModule, const char* pszFunction ) { InitializeLoadModule( pszModule, pszFunction ); }
 };
 struct CSysCallCacheEntry_FindModule : public CSysCallCacheEntry
 {
-	CSysCallCacheEntry_FindModule( _TCHAR *pszModule, char *pszFunction ) { InitializeFindModule( pszModule, pszFunction ); }
+	CSysCallCacheEntry_FindModule( const _TCHAR* pszModule, const char* pszFunction ) { InitializeFindModule( pszModule, pszFunction ); }
 };
 struct CSysCallCacheEntry_FindProc : public CSysCallCacheEntry
 {
-	CSysCallCacheEntry_FindProc( HMODULE hModule, char *pszFunction ) { InitializeFindProc( hModule, pszFunction ); }
+	CSysCallCacheEntry_FindProc( HMODULE hModule, const char* pszFunction ) { InitializeFindProc( hModule, pszFunction ); }
 };
 
 
@@ -131,8 +131,7 @@ CSysCallCacheEntry::CSysCallCacheEntry() :
 	m_hModule( NULL ),
 	m_bInitialized( false ),
 	m_bFreeModule( false )
-{
-}
+{}
 
 CSysCallCacheEntry::~CSysCallCacheEntry()
 {
@@ -149,36 +148,39 @@ SYSTEM_CALL_RESULT_t CSysCallCacheEntry::CallResult() const
 	return m_eResult;
 }
 
-SYSTEM_CALL_RESULT_t CSysCallCacheEntry::InitializeLoadModule( _TCHAR *pszModule, char *pszFunction )
+SYSTEM_CALL_RESULT_t CSysCallCacheEntry::InitializeLoadModule( const _TCHAR* pszModule, const char* pszFunction )
 {
 	m_bInitialized = true;
 
+	// LoadLibrary accepts LPCTSTR (const), so this is safe
 	m_hModule = ::LoadLibrary( pszModule );
 	m_bFreeModule = true;
-	if ( !m_hModule )
+	if (!m_hModule)
 		return m_eResult = SYSCALL_NODLL;
 
 	return InitializeFindProc( m_hModule, pszFunction );
 }
 
-SYSTEM_CALL_RESULT_t CSysCallCacheEntry::InitializeFindModule( _TCHAR *pszModule, char *pszFunction )
+SYSTEM_CALL_RESULT_t CSysCallCacheEntry::InitializeFindModule( const _TCHAR* pszModule, const char* pszFunction )
 {
 	m_bInitialized = true;
 
+	// GetModuleHandle accepts LPCTSTR (const), so this is safe
 	m_hModule = ::GetModuleHandle( pszModule );
 	m_bFreeModule = false;
-	if ( !m_hModule )
+	if (!m_hModule)
 		return m_eResult = SYSCALL_NODLL;
 
 	return InitializeFindProc( m_hModule, pszFunction );
 }
 
-SYSTEM_CALL_RESULT_t CSysCallCacheEntry::InitializeFindProc( HMODULE hModule, char *pszFunction )
+SYSTEM_CALL_RESULT_t CSysCallCacheEntry::InitializeFindProc( HMODULE hModule, const char* pszFunction )
 {
 	m_bInitialized = true;
 
+	// GetProcAddress accepts LPCSTR (const), so this is safe
 	m_pfnSysCall = GetProcAddress( hModule, pszFunction );
-	if ( !m_pfnSysCall )
+	if (!m_pfnSysCall)
 		return m_eResult = SYSCALL_NOPROC;
 
 	return m_eResult = SYSCALL_SUCCESS;
@@ -186,9 +188,9 @@ SYSTEM_CALL_RESULT_t CSysCallCacheEntry::InitializeFindProc( HMODULE hModule, ch
 
 void CSysCallCacheEntry::Reset()
 {
-	if ( m_bInitialized )
+	if (m_bInitialized)
 	{
-		if ( m_bFreeModule && m_hModule )
+		if (m_bFreeModule && m_hModule)
 			::FreeLibrary( m_hModule );
 		m_eResult = SYSCALL_SUCCESS;
 		m_hModule = NULL;
@@ -206,7 +208,7 @@ void CSysCallCacheEntry::SetFailed( SYSTEM_CALL_RESULT_t eResult )
 template < typename FN >
 FN CSysCallCacheEntry::GetFunction() const
 {
-	return reinterpret_cast< FN >( m_pfnSysCall );
+	return reinterpret_cast<FN>(m_pfnSysCall);
 }
 
 
@@ -224,17 +226,17 @@ unsigned long Plat_GetMemPageSize()
 //	Plat_GetPagedPoolInfo
 //		Fills in the paged pool info structure if successful.
 //
-SYSTEM_CALL_RESULT_t Plat_GetPagedPoolInfo( PAGED_POOL_INFO_t *pPPI )
+SYSTEM_CALL_RESULT_t Plat_GetPagedPoolInfo( PAGED_POOL_INFO_t* pPPI )
 {
 	memset( pPPI, 0, sizeof( *pPPI ) );
 
 	static CSysCallCacheEntry_FindModule qsi( _T( "ntdll.dll" ), "NtQuerySystemInformation" );
-	
-	if ( qsi.CallResult() != SYSCALL_SUCCESS )
+
+	if (qsi.CallResult() != SYSCALL_SUCCESS)
 		return qsi.CallResult();
 
 	static bool s_bOsVersionValid = false;
-	if ( !s_bOsVersionValid )
+	if (!s_bOsVersionValid)
 	{
 		s_bOsVersionValid = true;
 		OSVERSIONINFO osver;
@@ -243,28 +245,28 @@ SYSTEM_CALL_RESULT_t Plat_GetPagedPoolInfo( PAGED_POOL_INFO_t *pPPI )
 		GetVersionEx( &osver );
 
 		// We should run it only on Windows XP or Windows 2003
-#define MAKEVER( high, low ) DWORD( MAKELONG( low, high ) )
+	#define MAKEVER( high, low ) DWORD( MAKELONG( low, high ) )
 		DWORD dwOsVer = MAKEVER( osver.dwMajorVersion, osver.dwMinorVersion );
-		if ( dwOsVer < MAKEVER( 5, 1 ) ||	// Earlier than WinXP
-			 dwOsVer > MAKEVER( 5, 2 ) )	// Later than Win2003 (or 64-bit)
+		if (dwOsVer < MAKEVER( 5, 1 ) ||	// Earlier than WinXP
+			 dwOsVer > MAKEVER( 5, 2 ))	// Later than Win2003 (or 64-bit)
 		{
 			qsi.SetFailed( SYSCALL_UNSUPPORTED );
 		}
 
 		// Don't care for 64-bit Windows
 		CSysCallCacheEntry_FindModule wow64( _T( "kernel32.dll" ), "IsWow64Process" );
-		if ( wow64.CallResult() == SYSCALL_SUCCESS )
+		if (wow64.CallResult() == SYSCALL_SUCCESS)
 		{
-			typedef BOOL ( WINAPI * PFNWOW64 )( HANDLE, PBOOL );
+			typedef BOOL( WINAPI* PFNWOW64 )(HANDLE, PBOOL);
 			BOOL b64 = FALSE;
-			if ( ( wow64.GetFunction< PFNWOW64 >() )( GetCurrentProcess(), &b64 ) &&
-				 b64 )
+			if ((wow64.GetFunction< PFNWOW64 >())(GetCurrentProcess(), &b64) &&
+				 b64)
 			{
 				qsi.SetFailed( SYSCALL_UNSUPPORTED );
 			}
 		}
-		
-		if ( qsi.CallResult() != SYSCALL_SUCCESS )
+
+		if (qsi.CallResult() != SYSCALL_SUCCESS)
 			return qsi.CallResult();
 	}
 
@@ -272,9 +274,9 @@ SYSTEM_CALL_RESULT_t Plat_GetPagedPoolInfo( PAGED_POOL_INFO_t *pPPI )
 	PrivateType( SYSTEM_PERFORMANCE_INFORMATION ) spi = {};
 	ULONG ulLength = sizeof( spi );
 	PrivateType( NTSTATUS ) lResult =
-		( qsi.GetFunction< PrivateType( NtQuerySystemInformation ) >() )
-		( SystemPerformanceInformation, &spi, ulLength, &ulLength );
-	if ( lResult )
+		(qsi.GetFunction< PrivateType( NtQuerySystemInformation ) >())
+		(SystemPerformanceInformation, &spi, ulLength, &ulLength);
+	if (lResult)
 		return SYSCALL_FAILED;
 
 	// Return the result
@@ -300,7 +302,7 @@ unsigned long Plat_GetMemPageSize()
 //	Plat_GetPagedPoolInfo
 //		Fills in the paged pool info structure if successful.
 //
-SYSTEM_CALL_RESULT_t Plat_GetPagedPoolInfo( PAGED_POOL_INFO_t *pPPI )
+SYSTEM_CALL_RESULT_t Plat_GetPagedPoolInfo( PAGED_POOL_INFO_t* pPPI )
 {
 	memset( pPPI, 0, sizeof( *pPPI ) );
 	return SYSCALL_UNSUPPORTED;

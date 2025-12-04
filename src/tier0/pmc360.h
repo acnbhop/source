@@ -62,12 +62,12 @@ private:
 		uint64 L2CacheMiss;
 		uint64 LHS; ///< load hit store
 
-		PMCounters(int64 _l2cm, int64 _lhs ) : L2CacheMiss(_l2cm), LHS(_lhs) {};
-		PMCounters() : L2CacheMiss(0), LHS(0) {};
+		PMCounters( int64 _l2cm, int64 _lhs ) : L2CacheMiss( _l2cm ), LHS( _lhs ) {};
+		PMCounters() : L2CacheMiss( 0 ), LHS( 0 ) {};
 	};
-	
+
 	PMCounters m_OnStart; ///< values when we began the timer
-	PMCounters m_Delta ; ///< computed total delta between start/stop
+	PMCounters m_Delta; ///< computed total delta between start/stop
 };
 
 #endif   // CPMCDATA_H

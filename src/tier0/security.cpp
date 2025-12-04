@@ -20,22 +20,22 @@
 #ifdef REQUIRE_HARDWARE_KEY
 	// This is the previous key, which was compromised.
 	//#define VALVE_DESKEY_ID "uW"	// Identity Password, Uniquely identifies HL2 keys
-	#define VALVE_DESKEY_ID "u$"	// Identity Password, Uniquely identifies HL2 keys
+#define VALVE_DESKEY_ID "u$"	// Identity Password, Uniquely identifies HL2 keys
 
-	// Include the key's API:
-	#include "DESKey/algo.h"
-	#include "DESKey/dk2win32.h"
-	
-	#pragma comment(lib, "DESKey/algo32.lib" )
-	#pragma comment(lib, "DESKey/dk2win32.lib" )
+// Include the key's API:
+#include "DESKey/algo.h"
+#include "DESKey/dk2win32.h"
+
+#pragma comment(lib, "DESKey/algo32.lib" )
+#pragma comment(lib, "DESKey/dk2win32.lib" )
 #endif
 
 bool Plat_VerifyHardwareKey()
 {
 #ifdef REQUIRE_HARDWARE_KEY
-		
+
 	// Ensure that a key with our ID exists:
-	if ( FindDK2( VALVE_DESKEY_ID, NULL ) )
+	if (FindDK2( VALVE_DESKEY_ID, NULL ))
 		return true;
 
 	return false;
@@ -48,7 +48,7 @@ bool Plat_VerifyHardwareKeyDriver()
 {
 #ifdef REQUIRE_HARDWARE_KEY
 	// Ensure that the driver is at least installed:
-	return DK2DriverInstalled() != 0; 
+	return DK2DriverInstalled() != 0;
 #else
 	return true;
 #endif
@@ -57,31 +57,31 @@ bool Plat_VerifyHardwareKeyDriver()
 bool Plat_VerifyHardwareKeyPrompt()
 {
 #ifdef REQUIRE_HARDWARE_KEY
-	if ( !DK2DriverInstalled() )
+	if (!DK2DriverInstalled())
 	{
-		if( IDCANCEL == MessageBox( NULL, "No drivers detected for the hardware key, please install them and re-run the application.\n", "No Driver Detected", MB_OKCANCEL ) )
+		if (IDCANCEL == MessageBox( NULL, "No drivers detected for the hardware key, please install them and re-run the application.\n", "No Driver Detected", MB_OKCANCEL ))
 		{
 			return false;
 		}
 	}
 
-	while ( !Plat_VerifyHardwareKey() )
+	while (!Plat_VerifyHardwareKey())
 	{
-		if ( IDCANCEL == MessageBox( NULL, "Please insert the hardware key and hit 'ok'.\n", "Insert Hardware Key", MB_OKCANCEL ) )
+		if (IDCANCEL == MessageBox( NULL, "Please insert the hardware key and hit 'ok'.\n", "Insert Hardware Key", MB_OKCANCEL ))
 		{
 			return false;
 		}
 
-		for ( int i=0; i < 2; i++ )
+		for (int i = 0; i < 2; i++)
 		{
 			// Is the key in now?
-			if( Plat_VerifyHardwareKey() )
+			if (Plat_VerifyHardwareKey())
 			{
 				return true;
 			}
 
 			// Sleep 2 / 3 of a second before trying again, in case the os recognizes the key slightly after it's being inserted:
-			Sleep(666);
+			Sleep( 666 );
 		}
 	}
 
@@ -95,9 +95,9 @@ bool Plat_FastVerifyHardwareKey()
 {
 #ifdef REQUIRE_HARDWARE_KEY
 	static int nIterations = 0;
-	
+
 	nIterations++;
-	if( nIterations > 100 )
+	if (nIterations > 100)
 	{
 		nIterations = 0;
 		return Plat_VerifyHardwareKey();

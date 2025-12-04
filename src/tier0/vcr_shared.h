@@ -20,7 +20,7 @@
 // the calls in the same order).
 typedef enum
 {
-	VCREvent_Sys_FloatTime=0,
+	VCREvent_Sys_FloatTime = 0,
 	VCREvent_recvfrom,
 	VCREvent_SyncToken,
 	VCREvent_GetCursorPos,

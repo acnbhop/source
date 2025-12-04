@@ -16,9 +16,8 @@
 bool g_bInitMemory = true;
 
 #ifdef POSIX
-void DoApplyMemoryInitializations( void *pMem, int nSize )
-{
-}
+void DoApplyMemoryInitializations( void* pMem, int nSize )
+{}
 
 size_t CalcHeapUsed()
 {
@@ -51,34 +50,34 @@ unsigned char g_RandomValues[256] = {
 unsigned long g_iCurRandomValueOffset = 0;
 
 
-void InitializeToFeeFee( void *pMem, int nSize )
+void InitializeToFeeFee( void* pMem, int nSize )
 {
-	unsigned long *pCurDWord = (unsigned long*)pMem;
+	unsigned long* pCurDWord = (unsigned long*) pMem;
 	int nDWords = nSize >> 2;
-	while ( nDWords )
+	while (nDWords)
 	{
 		*pCurDWord = 0xffeeffee;
 		++pCurDWord;
 		--nDWords;
 	}
-	
-	unsigned char *pCurChar = (unsigned char*)pCurDWord;
+
+	unsigned char* pCurChar = (unsigned char*) pCurDWord;
 	int nBytes = nSize & 3;
 	int iOffset = 0;
-	while ( nBytes )
+	while (nBytes)
 	{
-		*pCurChar = ((unsigned char*)&g_dwFeeFee)[iOffset];
+		*pCurChar = ((unsigned char*) &g_dwFeeFee)[iOffset];
 		++iOffset;
 		--nBytes;
 		++pCurChar;
-	}			
+	}
 }
 
 
-void InitializeToRandom( void *pMem, int nSize )
+void InitializeToRandom( void* pMem, int nSize )
 {
-	unsigned char *pOut = (unsigned char *)pMem;
-	for ( int i=0; i < nSize; i++ )
+	unsigned char* pOut = (unsigned char*) pMem;
+	for (int i = 0; i < nSize; i++)
 	{
 		pOut[i] = g_RandomValues[(g_iCurRandomValueOffset & 255)];
 		++g_iCurRandomValueOffset;
@@ -86,11 +85,11 @@ void InitializeToRandom( void *pMem, int nSize )
 }
 
 
-void DoApplyMemoryInitializations( void *pMem, int nSize )
+void DoApplyMemoryInitializations( void* pMem, int nSize )
 {
-	if ( !pMem )
+	if (!pMem)
 		return;
-	
+
 	// If they passed -noinitmemory on the command line, don't do anything here.
 	Assert( g_bInitMemory );
 
@@ -98,45 +97,45 @@ void DoApplyMemoryInitializations( void *pMem, int nSize )
 	static bool bDebuggerPresent = Plat_IsInDebugSession();
 	static bool bCheckedCommandLine = false;
 	static bool bRandomizeMemory = false;
-	if ( !bCheckedCommandLine )
+	if (!bCheckedCommandLine)
 	{
 		bCheckedCommandLine = true;
-		
+
 		//APS
-		char *pStr = (char*)Plat_GetCommandLineA();
-		if ( pStr )
+		char* pStr = (char*) Plat_GetCommandLineA();
+		if (pStr)
 		{
 			char tempStr[512];
 			strncpy( tempStr, pStr, sizeof( tempStr ) - 1 );
-			tempStr[ sizeof( tempStr ) - 1 ] = 0;
+			tempStr[sizeof( tempStr ) - 1] = 0;
 			_strupr( tempStr );
-			
-			if ( strstr( tempStr, "-RANDOMIZEMEMORY" ) )
+
+			if (strstr( tempStr, "-RANDOMIZEMEMORY" ))
 				bRandomizeMemory = true;
-			
-			if ( strstr( tempStr, "-NOINITMEMORY" ) )
+
+			if (strstr( tempStr, "-NOINITMEMORY" ))
 				g_bInitMemory = false;
 		}
 	}
 
-	if ( bRandomizeMemory )
+	if (bRandomizeMemory)
 	{
 		// They asked for it.. randomize all the memory.
 		InitializeToRandom( pMem, nSize );
 	}
 	else
 	{
-		if ( bDebuggerPresent )
+		if (bDebuggerPresent)
 		{
 			// Ok, it's already set to 0xbaadf00d, but we want something that will make floating-point #'s NANs.
 			InitializeToFeeFee( pMem, nSize );
 		}
 		else
 		{
-#ifdef _DEBUG
-			// Ok, it's already set to 0xcdcdcdcd, but we want something that will make floating-point #'s NANs.
+		#ifdef _DEBUG
+					// Ok, it's already set to 0xcdcdcdcd, but we want something that will make floating-point #'s NANs.
 			InitializeToFeeFee( pMem, nSize );
-#endif
+		#endif
 		}
 	}
 }
@@ -152,21 +151,21 @@ size_t CalcHeapUsed()
 
 	nTotal = 0;
 	hinfo._pentry = NULL;
-	while( ( heapstatus = _heapwalk( &hinfo ) ) == _HEAPOK )
+	while ((heapstatus = _heapwalk( &hinfo )) == _HEAPOK)
 	{
 		nTotal += (hinfo._useflag == _USEDENTRY) ? hinfo._size : 0;
 	}
 
 	switch (heapstatus)
 	{
-		case _HEAPEMPTY:
-		case _HEAPEND:
-			// success
-			break;
+	case _HEAPEMPTY:
+	case _HEAPEND:
+		// success
+		break;
 
-		default:
-			// heap corrupted
-			nTotal = -1;
+	default:
+		// heap corrupted
+		nTotal = -1;
 	}
 
 	return nTotal;

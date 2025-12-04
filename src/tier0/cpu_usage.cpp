@@ -54,11 +54,11 @@ typedef struct
 	DWORD dwReserved;
 } SYSTEM_TIME_INFORMATION;
 
-typedef LONG (WINAPI *PROCNTQSI)(UINT,PVOID,ULONG,PULONG);
+typedef LONG( WINAPI* PROCNTQSI )(UINT, PVOID, ULONG, PULONG);
 
 static PROCNTQSI NtQuerySystemInformation;
 
-float GetCPUUsage() 
+float GetCPUUsage()
 {
 	SYSTEM_PERFORMANCE_INFORMATION SysPerfInfo;
 	SYSTEM_TIME_INFORMATION SysTimeInfo;
@@ -66,41 +66,41 @@ float GetCPUUsage()
 	double dbIdleTime;
 	double dbSystemTime;
 	LONG status;
-	static LARGE_INTEGER liOldIdleTime = {0,0};
-	static LARGE_INTEGER liOldSystemTime = {0,0};
+	static LARGE_INTEGER liOldIdleTime = { 0,0 };
+	static LARGE_INTEGER liOldSystemTime = { 0,0 };
 
-	if ( !NtQuerySystemInformation)
+	if (!NtQuerySystemInformation)
 	{
-		NtQuerySystemInformation = (PROCNTQSI)GetProcAddress( GetModuleHandle("ntdll"), "NtQuerySystemInformation" );
+		NtQuerySystemInformation = (PROCNTQSI) GetProcAddress( GetModuleHandle( "ntdll" ), "NtQuerySystemInformation" );
 
-		if ( !NtQuerySystemInformation )
+		if (!NtQuerySystemInformation)
 			return(0);
 	}
 
 	// get number of processors in the system
-	status = NtQuerySystemInformation( SystemBasicInformation,&SysBaseInfo,sizeof(SysBaseInfo),NULL );
-	if ( status != NO_ERROR )
+	status = NtQuerySystemInformation( SystemBasicInformation, &SysBaseInfo, sizeof( SysBaseInfo ), NULL );
+	if (status != NO_ERROR)
 		return(0);
 
 	// get new system time
-	status = NtQuerySystemInformation( SystemTimeInformation,&SysTimeInfo,sizeof(SysTimeInfo),0 );
-	if ( status!=NO_ERROR )
+	status = NtQuerySystemInformation( SystemTimeInformation, &SysTimeInfo, sizeof( SysTimeInfo ), 0 );
+	if (status != NO_ERROR)
 		return(0);
 
 	// get new CPU's idle time
-	status = NtQuerySystemInformation( SystemPerformanceInformation,&SysPerfInfo,sizeof(SysPerfInfo),NULL );
-	if ( status != NO_ERROR )
+	status = NtQuerySystemInformation( SystemPerformanceInformation, &SysPerfInfo, sizeof( SysPerfInfo ), NULL );
+	if (status != NO_ERROR)
 		return(0);
 
 	// if it's a first call - skip it
-	if ( liOldIdleTime.QuadPart != 0 )
+	if (liOldIdleTime.QuadPart != 0)
 	{
 		// CurrentValue = NewValue - OldValue
-		dbIdleTime = Li2Double(SysPerfInfo.liIdleTime) - Li2Double(liOldIdleTime);
-		dbSystemTime = Li2Double(SysTimeInfo.liKeSystemTime) - Li2Double(liOldSystemTime);
+		dbIdleTime = Li2Double( SysPerfInfo.liIdleTime ) - Li2Double( liOldIdleTime );
+		dbSystemTime = Li2Double( SysTimeInfo.liKeSystemTime ) - Li2Double( liOldSystemTime );
 
 		// CurrentCpuIdle = IdleTime / SystemTime
-		dbIdleTime = dbIdleTime / dbSystemTime / (double)SysBaseInfo.bKeNumberProcessors;
+		dbIdleTime = dbIdleTime / dbSystemTime / (double) SysBaseInfo.bKeNumberProcessors;
 
 		// CurrentCpuUsage% = 100 - (CurrentCpuIdle * 100) / NumberOfProcessors
 		// dbIdleTime = 100.0 - dbIdleTime * 100.0 / (double)SysBaseInfo.bKeNumberProcessors + 0.5;
@@ -114,7 +114,7 @@ float GetCPUUsage()
 	liOldIdleTime = SysPerfInfo.liIdleTime;
 	liOldSystemTime = SysTimeInfo.liKeSystemTime;
 
-	return (float)(1.0f - dbIdleTime);
+	return (float) (1.0f - dbIdleTime);
 }
 
 #endif // WIN32
@@ -122,7 +122,7 @@ float GetCPUUsage()
 #ifdef POSIX
 #include <stdlib.h>
 
-float GetCPUUsage() 
+float GetCPUUsage()
 {
 #ifdef ANDROID
 	return 0;

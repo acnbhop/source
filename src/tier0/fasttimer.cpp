@@ -34,18 +34,18 @@ void CClockSpeedInit::Init()
 	g_ClockSpeed = cpuinfo.m_Speed;
 
 	// cycle counter runs as doc'd at 1/64 Xbox 3.2GHz clock speed, thus 50 Mhz
-	if ( IsX360() )
+	if (IsX360())
 	{
 		g_ClockSpeed /= 64L;
 	}
 
 	// Avoid integer overflow when writing to g_dwClockSpeed
-	if ( g_ClockSpeed <= ULONG_MAX )
-		g_dwClockSpeed = (unsigned long)g_ClockSpeed;
+	if (g_ClockSpeed <= ULONG_MAX)
+		g_dwClockSpeed = (unsigned long) g_ClockSpeed;
 	else
 		g_dwClockSpeed = ULONG_MAX;
 
-	g_ClockSpeedMicrosecondsMultiplier = 1000000.0 / (double)g_ClockSpeed;
-	g_ClockSpeedMillisecondsMultiplier = 1000.0 / (double)g_ClockSpeed;
-	g_ClockSpeedSecondsMultiplier = 1.0 / (double)g_ClockSpeed;
+	g_ClockSpeedMicrosecondsMultiplier = 1000000.0 / (double) g_ClockSpeed;
+	g_ClockSpeedMillisecondsMultiplier = 1000.0 / (double) g_ClockSpeed;
+	g_ClockSpeedSecondsMultiplier = 1.0 / (double) g_ClockSpeed;
 }

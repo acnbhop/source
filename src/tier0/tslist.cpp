@@ -31,19 +31,19 @@ CTSList<int> g_TestList;
 volatile bool g_bStart;
 std::list<ThreadHandle_t> g_ThreadHandles;
 
-int *g_pTestBuckets;
+int* g_pTestBuckets;
 
 CTSListBase g_Test;
-TSLNodeBase_t **g_nodes;
+TSLNodeBase_t** g_nodes;
 int idx = 0;
 
-const char *g_pListType;
+const char* g_pListType;
 
 class CTestOps
 {
 public:
 	virtual void Push( int item ) = 0;
-	virtual bool Pop( int *pResult ) = 0;
+	virtual bool Pop( int* pResult ) = 0;
 	virtual bool Validate() { return true; }
 	virtual bool IsEmpty() = 0;
 };
@@ -55,9 +55,9 @@ class CQueueOps : public CTestOps
 		g_TestQueue.PushItem( item );
 		g_nPushes++;
 	}
-	bool Pop( int *pResult )
+	bool Pop( int* pResult )
 	{
-		if ( g_TestQueue.PopItem( pResult ) )
+		if (g_TestQueue.PopItem( pResult ))
 		{
 			g_nPops++;
 			return true;
@@ -70,7 +70,7 @@ class CQueueOps : public CTestOps
 	}
 	bool IsEmpty()
 	{
-		return ( g_TestQueue.Count() == 0 );
+		return (g_TestQueue.Count() == 0);
 	}
 } g_QueueOps;
 
@@ -81,9 +81,9 @@ class CListOps : public CTestOps
 		g_TestList.PushItem( item );
 		g_nPushes++;
 	}
-	bool Pop( int *pResult )
+	bool Pop( int* pResult )
 	{
-		if ( g_TestList.PopItem( pResult ) )
+		if (g_TestList.PopItem( pResult ))
 		{
 			g_nPops++;
 			return true;
@@ -96,20 +96,20 @@ class CListOps : public CTestOps
 	}
 	bool IsEmpty()
 	{
-		return ( g_TestList.Count() == 0 );
+		return (g_TestList.Count() == 0);
 	}
 } g_ListOps;
 
-CTestOps *g_pTestOps;
+CTestOps* g_pTestOps;
 
 void ClearBuckets()
 {
-	memset( g_pTestBuckets, 0, sizeof(int) * NUM_TEST );
+	memset( g_pTestBuckets, 0, sizeof( int ) * NUM_TEST );
 }
 
 void IncBucket( int i )
 {
-	if ( i < NUM_TEST ) // tests can slop over a bit
+	if (i < NUM_TEST) // tests can slop over a bit
 	{
 		ThreadInterlockedIncrement( &g_pTestBuckets[i] );
 	}
@@ -117,7 +117,7 @@ void IncBucket( int i )
 
 void DecBucket( int i )
 {
-	if ( i < NUM_TEST ) // tests can slop over a bit
+	if (i < NUM_TEST) // tests can slop over a bit
 	{
 		ThreadInterlockedDecrement( &g_pTestBuckets[i] );
 	}
@@ -125,9 +125,9 @@ void DecBucket( int i )
 
 void ValidateBuckets()
 {
-	for ( int i = 0; i < NUM_TEST; i++ )
+	for (int i = 0; i < NUM_TEST; i++)
 	{
-		if ( g_pTestBuckets[i] != 0 )
+		if (g_pTestBuckets[i] != 0)
 		{
 			Msg( "Test bucket %d has an invalid value %d\n", i, g_pTestBuckets[i] );
 			Shipping_Assert( 0 );
@@ -136,24 +136,24 @@ void ValidateBuckets()
 	}
 }
 
-uintp PopThreadFunc( void *)
+uintp PopThreadFunc( void* )
 {
 	ThreadSetDebugName( "PopThread" );
 	g_nPopThreads++;
 	g_nThreads++;
-	while ( !g_bStart )
+	while (!g_bStart)
 	{
 		ThreadSleep( 0 );
 	}
 	int ignored;
 	for (;;)
 	{
-		if ( !g_pTestOps->Pop( &ignored ) )
+		if (!g_pTestOps->Pop( &ignored ))
 		{
-			if ( g_nPushThreads == 0 )
+			if (g_nPushThreads == 0)
 			{
 				// Pop the rest
-				while ( g_pTestOps->Pop( &ignored ) )
+				while (g_pTestOps->Pop( &ignored ))
 				{
 					ThreadSleep( 0 );
 				}
@@ -166,17 +166,17 @@ uintp PopThreadFunc( void *)
 	return 0;
 }
 
-uintp PushThreadFunc( void * )
+uintp PushThreadFunc( void* )
 {
 	ThreadSetDebugName( "PushThread" );
 	g_nPushThreads++;
 	g_nThreads++;
-	while ( !g_bStart )
+	while (!g_bStart)
 	{
 		ThreadSleep( 0 );
 	}
 
-	while ( g_nTested < NUM_TEST )
+	while (g_nTested < NUM_TEST)
 	{
 		g_pTestOps->Push( g_nTested );
 		g_nTested++;
@@ -199,12 +199,12 @@ void TestStart()
 
 void TestWait()
 {
-	while ( g_nThreads < NUM_THREADS )
+	while (g_nThreads < NUM_THREADS)
 	{
 		ThreadSleep( 0 );
 	}
 	g_bStart = true;
-	while ( g_nThreads > 0 )
+	while (g_nThreads > 0)
 	{
 		ThreadSleep( 50 );
 	}
@@ -214,31 +214,31 @@ void TestEnd( bool bExpectEmpty = true )
 {
 	ValidateBuckets();
 
-	if ( g_nPops != g_nPushes )
+	if (g_nPops != g_nPushes)
 	{
 		Msg( "FAIL: Not all items popped\n" );
 		Shipping_Assert( 0 );
 		return;
 	}
 
-	if ( g_pTestOps->Validate() )
+	if (g_pTestOps->Validate())
 	{
-		if ( !bExpectEmpty || g_pTestOps->IsEmpty() )
+		if (!bExpectEmpty || g_pTestOps->IsEmpty())
 		{
-			Msg("pass\n");
+			Msg( "pass\n" );
 		}
 		else
 		{
-			Msg("FAIL: !IsEmpty()\n");
+			Msg( "FAIL: !IsEmpty()\n" );
 			Shipping_Assert( 0 );
 		}
 	}
 	else
 	{
-		Msg("FAIL: !Validate()\n");
+		Msg( "FAIL: !Validate()\n" );
 		Shipping_Assert( 0 );
 	}
-	while ( g_ThreadHandles.size() )
+	while (g_ThreadHandles.size())
 	{
 		ThreadJoin( g_ThreadHandles.front(), 0 );
 
@@ -259,7 +259,7 @@ void PushPopTest()
 	ClearBuckets();
 	g_nTested = 0;
 	int value;
-	while ( g_nTested < NUM_TEST )
+	while (g_nTested < NUM_TEST)
 	{
 		value = g_nTested++;
 		g_pTestOps->Push( value );
@@ -268,7 +268,7 @@ void PushPopTest()
 
 	g_pTestOps->Validate();
 
-	while ( g_pTestOps->Pop( &value ) )
+	while (g_pTestOps->Pop( &value ))
 	{
 		DecBucket( value );
 	}
@@ -280,19 +280,19 @@ void PushPopInterleavedTestGuts()
 	int value;
 	for (;;)
 	{
-		bool bPush = ( rand() % 2 == 0 );
-		if ( bPush && ( value = g_nTested++ ) < NUM_TEST )
+		bool bPush = (rand() % 2 == 0);
+		if (bPush && (value = g_nTested++) < NUM_TEST)
 		{
 			g_pTestOps->Push( value );
 			IncBucket( value );
 		}
-		else if ( g_pTestOps->Pop( &value ) )
+		else if (g_pTestOps->Pop( &value ))
 		{
 			DecBucket( value );
 		}
 		else
 		{
-			if ( g_nTested >= NUM_TEST )
+			if (g_nTested >= NUM_TEST)
 			{
 				break;
 			}
@@ -310,11 +310,11 @@ void PushPopInterleavedTest()
 	TestEnd();
 }
 
-uintp PushPopInterleavedTestThreadFunc( void * )
+uintp PushPopInterleavedTestThreadFunc( void* )
 {
 	ThreadSetDebugName( "PushPopThread" );
 	g_nThreads++;
-	while ( !g_bStart )
+	while (!g_bStart)
 	{
 		ThreadSleep( 0 );
 	}
@@ -328,11 +328,11 @@ void STPushMTPop( bool bDistribute )
 	Msg( "%s test: single thread push, multithread pop, %s", g_pListType, bDistribute ? "distributed..." : "no affinity..." );
 	TestStart();
 	g_ThreadHandles.push_back( CreateSimpleThread( &PushThreadFunc, NULL ) );
-	for ( int i = 0; i < NUM_THREADS - 1; i++ )
+	for (int i = 0; i < NUM_THREADS - 1; i++)
 	{
 		ThreadHandle_t hThread = CreateSimpleThread( &PopThreadFunc, NULL );
 		g_ThreadHandles.push_back( hThread );
-		if ( bDistribute )
+		if (bDistribute)
 		{
 			int32 mask = 1 << (i % NUM_PROCESSORS);
 			ThreadSetAffinity( hThread, mask );
@@ -347,12 +347,12 @@ void MTPushSTPop( bool bDistribute )
 {
 	Msg( "%s test: multithread push, single thread pop, %s", g_pListType, bDistribute ? "distributed..." : "no affinity..." );
 	TestStart();
-	g_ThreadHandles.push_back( 	CreateSimpleThread( &PopThreadFunc, NULL ) );
-	for ( int i = 0; i < NUM_THREADS - 1; i++ )
+	g_ThreadHandles.push_back( CreateSimpleThread( &PopThreadFunc, NULL ) );
+	for (int i = 0; i < NUM_THREADS - 1; i++)
 	{
 		ThreadHandle_t hThread = CreateSimpleThread( &PushThreadFunc, NULL );
 		g_ThreadHandles.push_back( hThread );
-		if ( bDistribute )
+		if (bDistribute)
 		{
 			int32 mask = 1 << (i % NUM_PROCESSORS);
 			ThreadSetAffinity( hThread, mask );
@@ -368,21 +368,21 @@ void MTPushMTPop( bool bDistribute )
 	Msg( "%s test: multithread push, multithread pop, %s", g_pListType, bDistribute ? "distributed..." : "no affinity..." );
 	TestStart();
 	int ct = 0;
-	for ( int i = 0; i < NUM_THREADS / 2 ; i++ )
+	for (int i = 0; i < NUM_THREADS / 2; i++)
 	{
 		ThreadHandle_t hThread = CreateSimpleThread( &PopThreadFunc, NULL );
 		g_ThreadHandles.push_back( hThread );
-		if ( bDistribute )
+		if (bDistribute)
 		{
 			int32 mask = 1 << (ct++ % NUM_PROCESSORS);
 			ThreadSetAffinity( hThread, mask );
 		}
 	}
-	for ( int i = 0; i < NUM_THREADS / 2 ; i++ )
+	for (int i = 0; i < NUM_THREADS / 2; i++)
 	{
 		ThreadHandle_t hThread = CreateSimpleThread( &PushThreadFunc, NULL );
 		g_ThreadHandles.push_back( hThread );
-		if ( bDistribute )
+		if (bDistribute)
 		{
 			int32 mask = 1 << (ct++ % NUM_PROCESSORS);
 			ThreadSetAffinity( hThread, mask );
@@ -398,11 +398,11 @@ void MTPushPopPopInterleaved( bool bDistribute )
 	Msg( "%s test: multithread interleaved push/pop, %s", g_pListType, bDistribute ? "distributed..." : "no affinity..." );
 	srand( Plat_MSTime() );
 	TestStart();
-	for ( int i = 0; i < NUM_THREADS; i++ )
+	for (int i = 0; i < NUM_THREADS; i++)
 	{
 		ThreadHandle_t hThread = CreateSimpleThread( &PushPopInterleavedTestThreadFunc, NULL );
 		g_ThreadHandles.push_back( hThread );
-		if ( bDistribute )
+		if (bDistribute)
 		{
 			int32 mask = 1 << (i % NUM_PROCESSORS);
 			ThreadSetAffinity( hThread, mask );
@@ -416,11 +416,11 @@ void MTPushSeqPop( bool bDistribute )
 {
 	Msg( "%s test: multithread push, sequential pop, %s", g_pListType, bDistribute ? "distributed..." : "no affinity..." );
 	TestStart();
-	for ( int i = 0; i < NUM_THREADS; i++ )
+	for (int i = 0; i < NUM_THREADS; i++)
 	{
 		ThreadHandle_t hThread = CreateSimpleThread( &PushThreadFunc, NULL );
 		g_ThreadHandles.push_back( hThread );
-		if ( bDistribute )
+		if (bDistribute)
 		{
 			int32 mask = 1 << (i % NUM_PROCESSORS);
 			ThreadSetAffinity( hThread, mask );
@@ -430,7 +430,7 @@ void MTPushSeqPop( bool bDistribute )
 	TestWait();
 	int ignored;
 	g_pTestOps->Validate();
-	while ( g_pTestOps->Pop( &ignored ) )
+	while (g_pTestOps->Pop( &ignored ))
 	{
 	}
 	TestEnd();
@@ -440,15 +440,15 @@ void SeqPushMTPop( bool bDistribute )
 {
 	Msg( "%s test: sequential push, multithread pop, %s", g_pListType, bDistribute ? "distributed..." : "no affinity..." );
 	TestStart();
-	while ( g_nTested++ < NUM_TEST )
+	while (g_nTested++ < NUM_TEST)
 	{
 		g_pTestOps->Push( g_nTested );
 	}
-	for ( int i = 0; i < NUM_THREADS; i++ )
+	for (int i = 0; i < NUM_THREADS; i++)
 	{
 		ThreadHandle_t hThread = CreateSimpleThread( &PopThreadFunc, NULL );
 		g_ThreadHandles.push_back( hThread );
-		if ( bDistribute )
+		if (bDistribute)
 		{
 			int32 mask = 1 << (i % NUM_PROCESSORS);
 			ThreadSetAffinity( hThread, mask );
@@ -464,13 +464,13 @@ void RunSharedTests( int nTests )
 {
 	using namespace TSListTests;
 
-	const CPUInformation &pi = *GetCPUInformation();
+	const CPUInformation& pi = *GetCPUInformation();
 	NUM_PROCESSORS = pi.m_nLogicalProcessors;
 	MAX_THREADS = NUM_PROCESSORS * 2;
 	g_pTestBuckets = new int[NUM_TEST];
-	while ( nTests-- )
+	while (nTests--)
 	{
-		for ( NUM_THREADS = 2; NUM_THREADS <= MAX_THREADS; NUM_THREADS *= 2)
+		for (NUM_THREADS = 2; NUM_THREADS <= MAX_THREADS; NUM_THREADS *= 2)
 		{
 			Msg( "\nTesting %d threads:\n", NUM_THREADS );
 			PushPopTest();
@@ -481,7 +481,7 @@ void RunSharedTests( int nTests )
 			MTPushSTPop( false );
 			MTPushMTPop( false );
 			MTPushPopPopInterleaved( false );
-			if ( NUM_PROCESSORS > 1 )
+			if (NUM_PROCESSORS > 1)
 			{
 				SeqPushMTPop( true );
 				STPushMTPop( true );
@@ -501,13 +501,13 @@ bool RunTSListTests( int nListSize, int nTests )
 	NUM_TEST = nListSize;
 
 	TSLHead_t foo;
-	(void)foo; // Avoid warning about unused variable.
+	(void) foo; // Avoid warning about unused variable.
 #ifdef USE_NATIVE_SLIST
-	int maxSize = ( 1 << (sizeof( foo.Depth ) * 8) ) - 1;
+	int maxSize = (1 << (sizeof( foo.Depth ) * 8)) - 1;
 #else
-	int maxSize = ( 1 << (sizeof( foo.value.Depth ) * 8) ) - 1;
+	int maxSize = (1 << (sizeof( foo.value.Depth ) * 8)) - 1;
 #endif
-	if ( NUM_TEST > maxSize )
+	if (NUM_TEST > maxSize)
 	{
 		Msg( "TSList cannot hold more that %d nodes\n", maxSize );
 		return false;
@@ -519,9 +519,9 @@ bool RunTSListTests( int nListSize, int nTests )
 
 	RunSharedTests( nTests );
 
-	Msg("Tests done, purging test memory..." );
+	Msg( "Tests done, purging test memory..." );
 	g_TestList.Purge();
-	Msg( "done\n");
+	Msg( "done\n" );
 	return true;
 }
 
@@ -535,8 +535,8 @@ bool RunTSQueueTests( int nListSize, int nTests )
 
 	RunSharedTests( nTests );
 
-	Msg("Tests done, purging test memory..." );
+	Msg( "Tests done, purging test memory..." );
 	g_TestQueue.Purge();
-	Msg( "done\n");
+	Msg( "done\n" );
 	return true;
 }

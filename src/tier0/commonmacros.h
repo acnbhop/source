@@ -37,7 +37,7 @@
 template <typename T>
 inline bool IsPowerOfTwo( T value )
 {
-	return (value & ( value - (T)1 )) == (T)0;
+	return (value & (value - (T) 1)) == (T) 0;
 }
 
 #ifndef REFERENCE
@@ -98,7 +98,7 @@ inline bool IsPowerOfTwo( T value )
 // That is the point.
 extern "C++" // templates cannot be declared to have 'C' linkage
 template <typename T, size_t N>
-char (*RtlpNumberOf( UNALIGNED T (&)[N] ))[N];
+char ( *RtlpNumberOf( UNALIGNED T( & )[N] ) )[N];
 
 #ifdef _PREFAST_
 // The +0 is so that we can go:
@@ -156,19 +156,19 @@ char (*RtlpNumberOf( UNALIGNED T (&)[N] ))[N];
 #define V_ARRAYSIZE(p)		ARRAYSIZE(p)
 
 template< typename IndexType, typename T, unsigned int N >
-IndexType ClampedArrayIndex( const T (&buffer)[N], IndexType index )
+IndexType ClampedArrayIndex( const T( &buffer )[N], IndexType index )
 {
 	NOTE_UNUSED( buffer );
-	return clamp( index, 0, (IndexType)N - 1 );
+	return clamp( index, 0, (IndexType) N - 1 );
 }
 
 template< typename T, unsigned int N >
-T ClampedArrayElement( const T (&buffer)[N], unsigned int uIndex )
+T ClampedArrayElement( const T( &buffer )[N], unsigned int uIndex )
 {
 	// Put index in an unsigned type to halve the clamping.
-	if ( uIndex >= N )
+	if (uIndex >= N)
 		uIndex = N - 1;
-	return buffer[ uIndex ];
+	return buffer[uIndex];
 }
 
 #endif // COMMONMACROS_H

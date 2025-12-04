@@ -17,7 +17,7 @@
 // See these sources for detailed information regarding the
 // Microsoft Foundation Classes product.
 
-#include "stdafx.h"
+//#include "stdafx.h"
 
 #ifdef AFX_CORE1_SEG
 #pragma code_seg(AFX_CORE1_SEG)

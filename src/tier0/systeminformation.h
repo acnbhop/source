@@ -10,11 +10,11 @@
 #define SYSTEMINFORMATION_H
 
 #ifdef _WIN32
-	#pragma once
+#pragma once
 #endif
 
 #ifndef PLATFORM_INTERFACE
-	#define PLATFORM_INTERFACE
+#define PLATFORM_INTERFACE
 #endif
 
 //
@@ -22,11 +22,11 @@
 //
 enum SYSTEM_CALL_RESULT_t
 {
-	SYSCALL_SUCCESS		= 0,	// System call succeeded
-	SYSCALL_FAILED		= 1,	// System call failed
-	SYSCALL_NOPROC		= 2,	// Failed to find required system procedure
-	SYSCALL_NODLL		= 3,	// Failed to find or load required system module
-	SYSCALL_UNSUPPORTED	= 4,	// System call unsupported on the OS
+	SYSCALL_SUCCESS = 0,	// System call succeeded
+	SYSCALL_FAILED = 1,	// System call failed
+	SYSCALL_NOPROC = 2,	// Failed to find required system procedure
+	SYSCALL_NODLL = 3,	// Failed to find or load required system module
+	SYSCALL_UNSUPPORTED = 4,	// System call unsupported on the OS
 };
 
 
@@ -49,7 +49,7 @@ PLATFORM_INTERFACE unsigned long Plat_GetMemPageSize();
 //	Plat_GetPagedPoolInfo
 //		Fills in the paged pool info structure if successful.
 //
-PLATFORM_INTERFACE SYSTEM_CALL_RESULT_t Plat_GetPagedPoolInfo( PAGED_POOL_INFO_t *pPPI );
+PLATFORM_INTERFACE SYSTEM_CALL_RESULT_t Plat_GetPagedPoolInfo( PAGED_POOL_INFO_t* pPPI );
 
 
 

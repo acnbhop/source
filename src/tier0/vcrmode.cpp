@@ -24,31 +24,31 @@
 
 // FIXME: We totally have a bad tier dependency here
 #include "inputsystem/inputenums.h"
-												
+
 #ifndef NO_VCR
 
 #define PvRealloc realloc
 #define PvAlloc malloc
 
-											
-												
+
+
 #define VCR_RuntimeAssert(x)	VCR_RuntimeAssertFn(x, #x)
 
-double g_flLastVCRFloatTimeValue;												
+double g_flLastVCRFloatTimeValue;
 
 bool		g_bExpectingWindowProcCalls = false;
 
-IVCRHelpers	*g_pHelpers = 0;
+IVCRHelpers* g_pHelpers = 0;
 
-FILE		*g_pVCRFile = NULL;
+FILE* g_pVCRFile = NULL;
 VCRMode_t	g_VCRMode = VCR_Disabled;
 VCRMode_t	g_OldVCRMode = VCR_Invalid;		// Stored temporarily between SetEnabled(0)/SetEnabled(1) blocks.
 int			g_iCurEvent = 0;
 
 int			g_CurFilePos = 0;				// So it knows when we're done playing back.
-int			g_FileLen = 0;					
+int			g_FileLen = 0;
 
-VCREvent	g_LastReadEvent = (VCREvent)-1;	// Last VCR_ReadEvent() call.
+VCREvent	g_LastReadEvent = (VCREvent) -1;	// Last VCR_ReadEvent() call.
 int			g_LastEventThread;				// The thread index of the thread that g_LastReadEvent is intended for.
 
 int			g_bVCREnabled = 0;
@@ -64,12 +64,12 @@ inline unsigned long Wrap_WaitForSingleObject( HANDLE hObj, DWORD duration )
 	return WaitForSingleObject( hObj, duration );
 }
 
-inline unsigned long Wrap_WaitForMultipleObjects( uint32 nHandles, const void **pHandles, int bWaitAll, uint32 timeout )
+inline unsigned long Wrap_WaitForMultipleObjects( uint32 nHandles, const void** pHandles, int bWaitAll, uint32 timeout )
 {
-	return WaitForMultipleObjects( nHandles, (const HANDLE *)pHandles, bWaitAll, timeout );
+	return WaitForMultipleObjects( nHandles, (const HANDLE*) pHandles, bWaitAll, timeout );
 }
 
-inline void Wrap_EnterCriticalSection( CRITICAL_SECTION *pSection )
+inline void Wrap_EnterCriticalSection( CRITICAL_SECTION* pSection )
 {
 	EnterCriticalSection( pSection );
 }
@@ -79,7 +79,7 @@ inline void Wrap_EnterCriticalSection( CRITICAL_SECTION *pSection )
 // ------------------------------------------------------------------------------------------ //
 // Threadsafe debugging file output.
 // ------------------------------------------------------------------------------------------ //
-FILE *g_pDebugFile = 0;
+FILE* g_pDebugFile = 0;
 CRITICAL_SECTION g_DebugFileCS;
 
 class CCSInit
@@ -95,24 +95,24 @@ public:
 	}
 } g_DebugFileCS222;
 
-void VCR_Debug( const char *pMsg, ... )
+void VCR_Debug( const char* pMsg, ... )
 {
 	va_list marker;
 	va_start( marker, pMsg );
 
 	EnterCriticalSection( &g_DebugFileCS );
 
-	if ( !g_pDebugFile )
+	if (!g_pDebugFile)
 		g_pDebugFile = fopen( "c:\\vcrdebug.txt", "wt" );
 
-	if ( g_pDebugFile )
+	if (g_pDebugFile)
 	{
 		vfprintf( g_pDebugFile, pMsg, marker );
 		fflush( g_pDebugFile );
 	}
 
 	LeaveCriticalSection( &g_DebugFileCS );
-	
+
 	va_end( marker );
 }
 
@@ -138,7 +138,7 @@ public:
 	HANDLE m_hWaitEvent;	// Used to get the signal that there is an event for this thread.
 	bool m_bEnabled;		// By default, this is true, but it can be set to false to temporarily disable a thread's VCR usage.
 };
-CVCRThreadInfo *g_pVCRThreads = NULL;	// This gets allocated to MAX_VCR_THREADS size if we're doing any VCR recording or playback.
+CVCRThreadInfo* g_pVCRThreads = NULL;	// This gets allocated to MAX_VCR_THREADS size if we're doing any VCR recording or playback.
 int g_nVCRThreads = 0;
 
 // Used to avoid writing the thread ID into events that are for the main thread.
@@ -151,10 +151,10 @@ bool g_bVCRStartCalled = false;
 unsigned short GetCurrentVCRThreadIndex()
 {
 	DWORD hCurThread = GetCurrentThreadId();
-	for ( int i=0; i < g_nVCRThreads; i++ )
+	for (int i = 0; i < g_nVCRThreads; i++)
 	{
-		if ( g_pVCRThreads[i].m_ThreadID == hCurThread )
-			return (unsigned short)i;
+		if (g_pVCRThreads[i].m_ThreadID == hCurThread)
+			return (unsigned short) i;
 	}
 	Error( "GetCurrentVCRThreadInfo: no matching thread." );
 	return 0;
@@ -163,7 +163,7 @@ unsigned short GetCurrentVCRThreadIndex()
 
 CVCRThreadInfo* GetCurrentVCRThreadInfo()
 {
-	return &g_pVCRThreads[ GetCurrentVCRThreadIndex() ];
+	return &g_pVCRThreads[GetCurrentVCRThreadIndex()];
 }
 
 
@@ -183,11 +183,11 @@ public:
 	{
 		m_bSignalledNextEvent = false;
 
-		if ( g_VCRMode == VCR_Record )
+		if (g_VCRMode == VCR_Record)
 		{
 			Wrap_EnterCriticalSection( &g_VCRCriticalSection );
 		}
-		else if ( g_VCRMode == VCR_Playback )
+		else if (g_VCRMode == VCR_Playback)
 		{
 			// Wait until our event is signalled, telling us that we are the next guy in line for an event.
 			WaitForSingleObject( GetCurrentVCRThreadInfo()->m_hWaitEvent, INFINITE );
@@ -195,11 +195,11 @@ public:
 	}
 	~CVCRThreadSafe()
 	{
-		if ( g_VCRMode == VCR_Record )
+		if (g_VCRMode == VCR_Record)
 		{
 			LeaveCriticalSection( &g_VCRCriticalSection );
 		}
-		else if ( g_VCRMode == VCR_Playback && !m_bSignalledNextEvent )
+		else if (g_VCRMode == VCR_Playback && !m_bSignalledNextEvent)
 		{
 			// Set the event for the next thread's VCR event.
 			VCR_SignalNextEvent();
@@ -237,20 +237,20 @@ public:
 // Internal functions.
 // ---------------------------------------------------------------------- //
 
-static void VCR_Error( const char *pFormat, ... )
+static void VCR_Error( const char* pFormat, ... )
 {
-	#ifdef _DEBUG
-		// Figure out which thread we're in, for the debugger.
-		DWORD curThreadId = GetCurrentThreadId();
-		int iCurThread = -1;
-		for ( int i=0; i < g_nVCRThreads; i++ )
-		{
-			if ( g_pVCRThreads[i].m_ThreadID == curThreadId )
-				iCurThread = i;
-		}
+#ifdef _DEBUG
+	// Figure out which thread we're in, for the debugger.
+	DWORD curThreadId = GetCurrentThreadId();
+	int iCurThread = -1;
+	for (int i = 0; i < g_nVCRThreads; i++)
+	{
+		if (g_pVCRThreads[i].m_ThreadID == curThreadId)
+			iCurThread = i;
+	}
 
-		DebuggerBreak();
-	#endif
+	DebuggerBreak();
+#endif
 
 	char str[256];
 	va_list marker;
@@ -262,50 +262,50 @@ static void VCR_Error( const char *pFormat, ... )
 	VCREnd();
 }
 
-static void VCR_RuntimeAssertFn(int bAssert, char const *pStr)
+static void VCR_RuntimeAssertFn( int bAssert, char const* pStr )
 {
-	if(!bAssert)
+	if (!bAssert)
 	{
 		VCR_Error( "*** VCR ASSERT FAILED: %s ***\n", pStr );
 	}
 }
 
-static void VCR_Read(void *pDest, int size)
+static void VCR_Read( void* pDest, int size )
 {
-	if(!g_pVCRFile)
+	if (!g_pVCRFile)
 	{
-		memset(pDest, 0, size);
+		memset( pDest, 0, size );
 		return;
 	}
 
-	fread(pDest, 1, size, g_pVCRFile);
-	
+	fread( pDest, 1, size, g_pVCRFile );
+
 	g_CurFilePos += size;
-	
-	VCR_RuntimeAssert(g_CurFilePos <= g_FileLen);
-	
-	if(g_CurFilePos >= g_FileLen)
+
+	VCR_RuntimeAssert( g_CurFilePos <= g_FileLen );
+
+	if (g_CurFilePos >= g_FileLen)
 	{
 		VCREnd();
 	}
 }
 
 template<class T>
-static void VCR_ReadVal(T &val)
+static void VCR_ReadVal( T& val )
 {
-	VCR_Read(&val, sizeof(val));
+	VCR_Read( &val, sizeof( val ) );
 }
 
-static void VCR_Write(void const *pSrc, int size)
+static void VCR_Write( void const* pSrc, int size )
 {
-	fwrite(pSrc, 1, size, g_pVCRFile);
-	fflush(g_pVCRFile);
+	fwrite( pSrc, 1, size, g_pVCRFile );
+	fflush( g_pVCRFile );
 }
 
 template<class T>
-static void VCR_WriteVal(T &val)
+static void VCR_WriteVal( T& val )
 {
-	VCR_Write(&val, sizeof(val));
+	VCR_Write( &val, sizeof( val ) );
 }
 
 
@@ -318,7 +318,7 @@ void VCR_SignalNextEvent()
 
 	// Verify that we're in the correct thread for this event.
 	unsigned short threadID;
-	if ( event & 0x80 )
+	if (event & 0x80)
 	{
 		VCR_ReadVal( threadID );
 		event &= ~0x80;
@@ -329,13 +329,13 @@ void VCR_SignalNextEvent()
 	}
 
 	// Must be a valid thread ID.
-	if ( threadID >= g_nVCRThreads )
+	if (threadID >= g_nVCRThreads)
 	{
 		Error( "VCR_ReadEvent: invalid threadID (%d).", threadID );
 	}
 
 	// Now signal the next thread.
-	g_LastReadEvent = (VCREvent)event;
+	g_LastReadEvent = (VCREvent) event;
 	g_LastEventThread = threadID;
 	SetEvent( g_pVCRThreads[threadID].m_hWaitEvent );
 }
@@ -349,10 +349,10 @@ static VCREvent VCR_ReadEvent()
 
 static void VCR_WriteEvent( VCREvent event )
 {
-	unsigned char cEvent = (unsigned char)event;
-	
+	unsigned char cEvent = (unsigned char) event;
+
 	unsigned short threadID = GetCurrentVCRThreadIndex();
-	if ( threadID == 0 )
+	if (threadID == 0)
 	{
 		VCR_Write( &cEvent, 1 );
 	}
@@ -360,7 +360,7 @@ static void VCR_WriteEvent( VCREvent event )
 	{
 		cEvent |= 0x80;
 		VCR_Write( &cEvent, 1 );
-		
+
 		VCR_WriteVal( threadID );
 	}
 }
@@ -370,15 +370,15 @@ static void VCR_IncrementEvent()
 	++g_iCurEvent;
 }
 
-static void VCR_Event(VCREvent type)
+static void VCR_Event( VCREvent type )
 {
-	if ( g_VCRMode == VCR_Disabled )
+	if (g_VCRMode == VCR_Disabled)
 		return;
 
 	VCR_IncrementEvent();
-	if(g_VCRMode == VCR_Record)
+	if (g_VCRMode == VCR_Record)
 	{
-		VCR_WriteEvent(type);
+		VCR_WriteEvent( type );
 	}
 	else
 	{
@@ -400,7 +400,7 @@ public:
 		return VCR_ReadEvent();
 	}
 
-	virtual void		Read( void *pDest, int size )
+	virtual void		Read( void* pDest, int size )
 	{
 		VCR_Read( pDest, size );
 	}
@@ -413,14 +413,14 @@ static CVCRTrace g_VCRTrace;
 // VCR interface.
 // ---------------------------------------------------------------------- //
 
-static int VCR_Start( char const *pFilename, bool bRecord, IVCRHelpers *pHelpers )
+static int VCR_Start( char const* pFilename, bool bRecord, IVCRHelpers* pHelpers )
 {
 	unsigned long version;
-	
+
 	g_VCRMainThreadID = GetCurrentThreadId();
 	g_bVCRStartCalled = true;
 
-	
+
 	// Setup the initial VCR thread list.
 	g_pVCRThreads = new CVCRThreadInfo[MAX_VCR_THREADS];
 	g_pVCRThreads[0].m_ThreadID = GetCurrentThreadId();
@@ -430,22 +430,22 @@ static int VCR_Start( char const *pFilename, bool bRecord, IVCRHelpers *pHelpers
 
 
 	g_pHelpers = pHelpers;
-	
+
 	VCREnd();
 
 	g_OldVCRMode = VCR_Invalid;
-	if ( bRecord )
+	if (bRecord)
 	{
-		char *pCommandLine = GetCommandLine();
-		if ( !strstr( pCommandLine, "-nosound" ) )
+		char* pCommandLine = GetCommandLine();
+		if (!strstr( pCommandLine, "-nosound" ))
 			Error( "VCR record: must use -nosound." );
 
 		g_pVCRFile = fopen( pFilename, "wb" );
-		if( g_pVCRFile )
+		if (g_pVCRFile)
 		{
 			// Write the version.
 			version = VCRFILE_VERSION;
-			VCR_Write(&version, sizeof(version));
+			VCR_Write( &version, sizeof( version ) );
 
 			g_VCRMode = VCR_Record;
 			return TRUE;
@@ -458,23 +458,23 @@ static int VCR_Start( char const *pFilename, bool bRecord, IVCRHelpers *pHelpers
 	else
 	{
 		g_pVCRFile = fopen( pFilename, "rb" );
-		if( g_pVCRFile )
+		if (g_pVCRFile)
 		{
 			// Get the file length.
-			fseek(g_pVCRFile, 0, SEEK_END);
-			g_FileLen = ftell(g_pVCRFile);
-			fseek(g_pVCRFile, 0, SEEK_SET);
+			fseek( g_pVCRFile, 0, SEEK_END );
+			g_FileLen = ftell( g_pVCRFile );
+			fseek( g_pVCRFile, 0, SEEK_SET );
 			g_CurFilePos = 0;
 
 			// Verify the file version.
-			VCR_Read(&version, sizeof(version));
-			if(version != VCRFILE_VERSION)
+			VCR_Read( &version, sizeof( version ) );
+			if (version != VCRFILE_VERSION)
 			{
-				assert(!"VCR_Start: invalid file version");
+				assert( !"VCR_Start: invalid file version" );
 				VCREnd();
 				return FALSE;
 			}
-			
+
 			g_VCRMode = VCR_Playback;
 			VCR_SignalNextEvent(); // Signal the first thread for its event.
 			return TRUE;
@@ -489,19 +489,19 @@ static int VCR_Start( char const *pFilename, bool bRecord, IVCRHelpers *pHelpers
 
 static void VCR_End()
 {
-	if ( g_pVCRFile )
+	if (g_pVCRFile)
 	{
-		fclose(g_pVCRFile);
+		fclose( g_pVCRFile );
 		g_pVCRFile = NULL;
 	}
 
-	if ( g_VCRMode == VCR_Playback )
+	if (g_VCRMode == VCR_Playback)
 	{
 		// It's going to get screwy now, especially if we have threads, so just exit.
-		#ifdef _DEBUG
-			if ( IsDebuggerPresent() )
-				DebuggerBreak();
-		#endif
+	#ifdef _DEBUG
+		if (IsDebuggerPresent())
+			DebuggerBreak();
+	#endif
 
 		TerminateProcess( GetCurrentProcess(), 1 );
 	}
@@ -524,72 +524,72 @@ static VCRMode_t VCR_GetMode()
 
 static void VCR_SetEnabled( int bEnabled )
 {
-	if ( g_VCRMode != VCR_Disabled )
+	if (g_VCRMode != VCR_Disabled)
 	{
-		g_pVCRThreads[ GetCurrentVCRThreadIndex() ].m_bEnabled = (bEnabled != 0);
+		g_pVCRThreads[GetCurrentVCRThreadIndex()].m_bEnabled = (bEnabled != 0);
 	}
 }
 
 
 inline bool IsVCRModeEnabledForThisThread()
 {
-	if ( g_VCRMode == VCR_Disabled || !g_bVCRStartCalled )
+	if (g_VCRMode == VCR_Disabled || !g_bVCRStartCalled)
 		return false;
 
-	return g_pVCRThreads[ GetCurrentVCRThreadIndex() ].m_bEnabled;
+	return g_pVCRThreads[GetCurrentVCRThreadIndex()].m_bEnabled;
 }
 
 
-static void VCR_SyncToken(char const *pToken)
+static void VCR_SyncToken( char const* pToken )
 {
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() )
+	if (!IsVCRModeEnabledForThisThread())
 		return;
 
 	unsigned char len;
 
 	VCR_THREADSAFE;
-	VCR_Event(VCREvent_SyncToken);
+	VCR_Event( VCREvent_SyncToken );
 
-	if(g_VCRMode == VCR_Record)
+	if (g_VCRMode == VCR_Record)
 	{
 		int intLen = strlen( pToken );
 		assert( intLen <= 255 );
 
-		len = (unsigned char)intLen;
-		
-		VCR_Write(&len, 1);
-		VCR_Write(pToken, len);
+		len = (unsigned char) intLen;
+
+		VCR_Write( &len, 1 );
+		VCR_Write( pToken, len );
 	}
-	else if(g_VCRMode == VCR_Playback)
+	else if (g_VCRMode == VCR_Playback)
 	{
 		char test[256];
 
-		VCR_Read(&len, 1);
-		VCR_Read(test, len);
-		
-		VCR_RuntimeAssert( len == (unsigned char)strlen(pToken) );
-		VCR_RuntimeAssert( memcmp(pToken, test, len) == 0 );
+		VCR_Read( &len, 1 );
+		VCR_Read( test, len );
+
+		VCR_RuntimeAssert( len == (unsigned char) strlen( pToken ) );
+		VCR_RuntimeAssert( memcmp( pToken, test, len ) == 0 );
 	}
 }
 
 
-static double VCR_Hook_Sys_FloatTime(double time)
+static double VCR_Hook_Sys_FloatTime( double time )
 {
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() )
+	if (!IsVCRModeEnabledForThisThread())
 		return time;
 
 	VCR_THREADSAFE;
-	VCR_Event(VCREvent_Sys_FloatTime);
+	VCR_Event( VCREvent_Sys_FloatTime );
 
-	if(g_VCRMode == VCR_Record)
+	if (g_VCRMode == VCR_Record)
 	{
-		VCR_Write(&time, sizeof(time));
+		VCR_Write( &time, sizeof( time ) );
 	}
-	else if(g_VCRMode == VCR_Playback)
+	else if (g_VCRMode == VCR_Playback)
 	{
-		VCR_Read(&time, sizeof(time));
+		VCR_Read( &time, sizeof( time ) );
 		g_flLastVCRFloatTimeValue = time;
 	}
 
@@ -599,32 +599,32 @@ static double VCR_Hook_Sys_FloatTime(double time)
 
 
 static int VCR_Hook_PeekMessage(
-	struct tagMSG *msg, 
-	void *hWnd, 
-	unsigned int wMsgFilterMin, 
-	unsigned int wMsgFilterMax, 
+	struct tagMSG* msg,
+	void* hWnd,
+	unsigned int wMsgFilterMin,
+	unsigned int wMsgFilterMax,
 	unsigned int wRemoveMsg
-	)
+)
 {
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() )
-		return PeekMessage((MSG*)msg, (HWND)hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg);
+	if (!IsVCRModeEnabledForThisThread())
+		return PeekMessage( (MSG*) msg, (HWND) hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg );
 
 	VCR_THREADSAFE;
 
-	if( g_VCRMode == VCR_Record )
+	if (g_VCRMode == VCR_Record)
 	{
 		// The trapped windowproc calls should be flushed by the time we get here.
 		int ret;
-		ret = PeekMessage( (MSG*)msg, (HWND)hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg );
+		ret = PeekMessage( (MSG*) msg, (HWND) hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg );
 
 		// NOTE: this must stay AFTER the trapped window proc calls or things get 
 		// read back in the wrong order.
 		VCR_Event( VCREvent_PeekMessage );
 
-		VCR_WriteVal(ret);
-		if(ret)
-			VCR_Write(msg, sizeof(MSG));
+		VCR_WriteVal( ret );
+		if (ret)
+			VCR_Write( msg, sizeof( MSG ) );
 
 		return ret;
 	}
@@ -636,9 +636,9 @@ static int VCR_Hook_PeekMessage(
 		VCR_Event( VCREvent_PeekMessage );
 
 		int ret;
-		VCR_ReadVal(ret);
-		if(ret)
-			VCR_Read(msg, sizeof(MSG));
+		VCR_ReadVal( ret );
+		if (ret)
+			VCR_Read( msg, sizeof( MSG ) );
 
 		return ret;
 	}
@@ -648,15 +648,15 @@ static int VCR_Hook_PeekMessage(
 void VCR_Hook_RecordGameMsg( const InputEvent_t& event )
 {
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() )
+	if (!IsVCRModeEnabledForThisThread())
 		return;
 
 	VCR_THREADSAFE;
 
-	if ( g_VCRMode == VCR_Record )
+	if (g_VCRMode == VCR_Record)
 	{
 		VCR_Event( VCREvent_GameMsg );
-		
+
 		char val = 1;
 		VCR_WriteVal( val );
 		VCR_WriteVal( event.m_nType );
@@ -670,12 +670,12 @@ void VCR_Hook_RecordGameMsg( const InputEvent_t& event )
 void VCR_Hook_RecordEndGameMsg()
 {
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() )
+	if (!IsVCRModeEnabledForThisThread())
 		return;
 
 	VCR_THREADSAFE;
 
-	if ( g_VCRMode == VCR_Record )
+	if (g_VCRMode == VCR_Record)
 	{
 		VCR_Event( VCREvent_GameMsg );
 		char val = 0;
@@ -687,18 +687,18 @@ void VCR_Hook_RecordEndGameMsg()
 bool VCR_Hook_PlaybackGameMsg( InputEvent_t* pEvent )
 {
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() )
+	if (!IsVCRModeEnabledForThisThread())
 		return false;
 
 	VCR_THREADSAFE;
 
-	if ( g_VCRMode == VCR_Playback )
+	if (g_VCRMode == VCR_Playback)
 	{
 		VCR_Event( VCREvent_GameMsg );
-		
+
 		char bMsg;
 		VCR_ReadVal( bMsg );
-		if ( bMsg )
+		if (bMsg)
 		{
 			VCR_ReadVal( pEvent->m_nType );
 			VCR_ReadVal( pEvent->m_nData );
@@ -707,89 +707,89 @@ bool VCR_Hook_PlaybackGameMsg( InputEvent_t* pEvent )
 			return true;
 		}
 	}
-	
+
 	return false;
 }
 
 
-static void VCR_Hook_GetCursorPos(struct tagPOINT *pt)
+static void VCR_Hook_GetCursorPos( struct tagPOINT* pt )
 {
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() )
+	if (!IsVCRModeEnabledForThisThread())
 	{
-		GetCursorPos(pt);
+		GetCursorPos( pt );
 		return;
 	}
 
 	VCR_THREADSAFE;
 
-	VCR_Event(VCREvent_GetCursorPos);
+	VCR_Event( VCREvent_GetCursorPos );
 
-	if(g_VCRMode == VCR_Playback)
+	if (g_VCRMode == VCR_Playback)
 	{
-		VCR_ReadVal(*pt);
+		VCR_ReadVal( *pt );
 	}
 	else
 	{
-		GetCursorPos(pt);
+		GetCursorPos( pt );
 
-		if(g_VCRMode == VCR_Record)
+		if (g_VCRMode == VCR_Record)
 		{
-			VCR_WriteVal(*pt);
+			VCR_WriteVal( *pt );
 		}
 	}
 }
 
 
-static void VCR_Hook_ScreenToClient(void *hWnd, struct tagPOINT *pt)
+static void VCR_Hook_ScreenToClient( void* hWnd, struct tagPOINT* pt )
 {
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() )
+	if (!IsVCRModeEnabledForThisThread())
 	{
-		ScreenToClient((HWND)hWnd, pt);
+		ScreenToClient( (HWND) hWnd, pt );
 		return;
 	}
 
 	VCR_THREADSAFE;
-	VCR_Event(VCREvent_ScreenToClient);
+	VCR_Event( VCREvent_ScreenToClient );
 
-	if(g_VCRMode == VCR_Playback)
+	if (g_VCRMode == VCR_Playback)
 	{
-		VCR_ReadVal(*pt);
+		VCR_ReadVal( *pt );
 	}
 	else
 	{
-		ScreenToClient((HWND)hWnd, pt);
+		ScreenToClient( (HWND) hWnd, pt );
 
-		if(g_VCRMode == VCR_Record)
+		if (g_VCRMode == VCR_Record)
 		{
-			VCR_WriteVal(*pt);
+			VCR_WriteVal( *pt );
 		}
 	}
 }
 
 
-static int VCR_Hook_recvfrom(int s, char *buf, int len, int flags, struct sockaddr *from, int *fromlen)
+static int VCR_Hook_recvfrom( int s, char* buf, int len, int flags, struct sockaddr* from, int* fromlen )
 {
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() )
+	if (!IsVCRModeEnabledForThisThread())
 	{
-		return recvfrom((SOCKET)s, buf, len, flags, from, fromlen);
+		return recvfrom( (SOCKET) s, buf, len, flags, from, fromlen );
 	}
 
 	VCR_THREADSAFE;
-	VCR_Event(VCREvent_recvfrom);
+	VCR_Event( VCREvent_recvfrom );
 
 	int ret;
-	if ( g_VCRMode == VCR_Playback )
+	if (g_VCRMode == VCR_Playback)
 	{
 		// Get the result from our file.
-		VCR_Read(&ret, sizeof(ret));
-		if(ret == SOCKET_ERROR)
+		VCR_Read( &ret, sizeof( ret ) );
+		if (ret == SOCKET_ERROR)
 		{
 			int err;
-			VCR_ReadVal(err);
-			WSASetLastError(err);
+			VCR_ReadVal( err );
+			WSASetLastError( err );
 		}
 		else
 		{
@@ -797,7 +797,7 @@ static int VCR_Hook_recvfrom(int s, char *buf, int len, int flags, struct sockad
 
 			char bFrom;
 			VCR_ReadVal( bFrom );
-			if ( bFrom )
+			if (bFrom)
 			{
 				VCR_Read( from, *fromlen );
 			}
@@ -805,24 +805,24 @@ static int VCR_Hook_recvfrom(int s, char *buf, int len, int flags, struct sockad
 	}
 	else
 	{
-		ret = recvfrom((SOCKET)s, buf, len, flags, from, fromlen);
+		ret = recvfrom( (SOCKET) s, buf, len, flags, from, fromlen );
 
-		if ( g_VCRMode == VCR_Record )
+		if (g_VCRMode == VCR_Record)
 		{
 			// Record the result.
-			VCR_Write(&ret, sizeof(ret));
-			if(ret == SOCKET_ERROR)
+			VCR_Write( &ret, sizeof( ret ) );
+			if (ret == SOCKET_ERROR)
 			{
 				int err = WSAGetLastError();
-				VCR_WriteVal(err);
+				VCR_WriteVal( err );
 			}
 			else
 			{
 				VCR_Write( buf, ret );
-				
+
 				char bFrom = !!from;
 				VCR_WriteVal( bFrom );
-				if ( bFrom )
+				if (bFrom)
 					VCR_Write( from, *fromlen );
 			}
 		}
@@ -832,27 +832,27 @@ static int VCR_Hook_recvfrom(int s, char *buf, int len, int flags, struct sockad
 }
 
 
-static int VCR_Hook_recv(int s, char *buf, int len, int flags)
+static int VCR_Hook_recv( int s, char* buf, int len, int flags )
 {
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() )
+	if (!IsVCRModeEnabledForThisThread())
 	{
-		return recv( (SOCKET)s, buf, len, flags );
+		return recv( (SOCKET) s, buf, len, flags );
 	}
 
 	VCR_THREADSAFE;
-	VCR_Event(VCREvent_recv);
+	VCR_Event( VCREvent_recv );
 
 	int ret;
-	if ( g_VCRMode == VCR_Playback )
+	if (g_VCRMode == VCR_Playback)
 	{
 		// Get the result from our file.
-		VCR_Read(&ret, sizeof(ret));
-		if(ret == SOCKET_ERROR)
+		VCR_Read( &ret, sizeof( ret ) );
+		if (ret == SOCKET_ERROR)
 		{
 			int err;
-			VCR_ReadVal(err);
-			WSASetLastError(err);
+			VCR_ReadVal( err );
+			WSASetLastError( err );
 		}
 		else
 		{
@@ -861,16 +861,16 @@ static int VCR_Hook_recv(int s, char *buf, int len, int flags)
 	}
 	else
 	{
-		ret = recv( (SOCKET)s, buf, len, flags );
+		ret = recv( (SOCKET) s, buf, len, flags );
 
-		if ( g_VCRMode == VCR_Record )
+		if (g_VCRMode == VCR_Record)
 		{
 			// Record the result.
-			VCR_Write(&ret, sizeof(ret));
-			if(ret == SOCKET_ERROR)
+			VCR_Write( &ret, sizeof( ret ) );
+			if (ret == SOCKET_ERROR)
 			{
 				int err = WSAGetLastError();
-				VCR_WriteVal(err);
+				VCR_WriteVal( err );
 			}
 			else
 			{
@@ -883,41 +883,41 @@ static int VCR_Hook_recv(int s, char *buf, int len, int flags)
 }
 
 
-static int VCR_Hook_send(int s, const char *buf, int len, int flags)
+static int VCR_Hook_send( int s, const char* buf, int len, int flags )
 {
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() )
+	if (!IsVCRModeEnabledForThisThread())
 	{
-		return send( (SOCKET)s, buf, len, flags );
+		return send( (SOCKET) s, buf, len, flags );
 	}
 
 	VCR_THREADSAFE;
-	VCR_Event(VCREvent_send);
+	VCR_Event( VCREvent_send );
 
 	int ret;
-	if ( g_VCRMode == VCR_Playback )
+	if (g_VCRMode == VCR_Playback)
 	{
 		// Get the result from our file.
-		VCR_Read(&ret, sizeof(ret));
-		if(ret == SOCKET_ERROR)
+		VCR_Read( &ret, sizeof( ret ) );
+		if (ret == SOCKET_ERROR)
 		{
 			int err;
-			VCR_ReadVal(err);
-			WSASetLastError(err);
+			VCR_ReadVal( err );
+			WSASetLastError( err );
 		}
 	}
 	else
 	{
-		ret = send( (SOCKET)s, buf, len, flags );
+		ret = send( (SOCKET) s, buf, len, flags );
 
-		if ( g_VCRMode == VCR_Record )
+		if (g_VCRMode == VCR_Record)
 		{
 			// Record the result.
-			VCR_Write(&ret, sizeof(ret));
-			if(ret == SOCKET_ERROR)
+			VCR_Write( &ret, sizeof( ret ) );
+			if (ret == SOCKET_ERROR)
 			{
 				int err = WSAGetLastError();
-				VCR_WriteVal(err);
+				VCR_WriteVal( err );
 			}
 		}
 	}
@@ -926,45 +926,45 @@ static int VCR_Hook_send(int s, const char *buf, int len, int flags)
 }
 
 
-static void VCR_Hook_Cmd_Exec(char **f)
+static void VCR_Hook_Cmd_Exec( char** f )
 {
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() )
+	if (!IsVCRModeEnabledForThisThread())
 		return;
 
 	VCR_THREADSAFE;
-	VCR_Event(VCREvent_Cmd_Exec);
+	VCR_Event( VCREvent_Cmd_Exec );
 
-	if(g_VCRMode == VCR_Playback)
+	if (g_VCRMode == VCR_Playback)
 	{
 		int len;
 
-		VCR_Read(&len, sizeof(len));
-		if(len == -1)
+		VCR_Read( &len, sizeof( len ) );
+		if (len == -1)
 		{
 			*f = NULL;
 		}
 		else
 		{
-			*f = (char*)PvAlloc(len);
-			VCR_Read(*f, len);
+			*f = (char*) PvAlloc( len );
+			VCR_Read( *f, len );
 		}
 	}
-	else if(g_VCRMode == VCR_Record)
+	else if (g_VCRMode == VCR_Record)
 	{
 		int len;
-		char *str = *f;
+		char* str = *f;
 
-		if(str)
+		if (str)
 		{
-			len = strlen(str)+1;
-			VCR_Write(&len, sizeof(len));
-			VCR_Write(str, len);
+			len = strlen( str ) + 1;
+			VCR_Write( &len, sizeof( len ) );
+			VCR_Write( str, len );
 		}
 		else
 		{
 			len = -1;
-			VCR_Write(&len, sizeof(len));
+			VCR_Write( &len, sizeof( len ) );
 		}
 	}
 }
@@ -974,124 +974,124 @@ static char* VCR_Hook_GetCommandLine()
 {
 	// This function is special in that it can be called before VCR mode is initialized.
 	// In this special case, just return the command line.
-	if ( !g_pVCRThreads )
+	if (!g_pVCRThreads)
 		return GetCommandLine();
 
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() )
+	if (!IsVCRModeEnabledForThisThread())
 		return GetCommandLine();
 
 	VCR_THREADSAFE;
-	VCR_Event(VCREvent_CmdLine);
+	VCR_Event( VCREvent_CmdLine );
 
 	int len;
-	char *ret;
+	char* ret;
 
-	if(g_VCRMode == VCR_Playback)
+	if (g_VCRMode == VCR_Playback)
 	{
-		VCR_Read(&len, sizeof(len));
+		VCR_Read( &len, sizeof( len ) );
 		ret = new char[len];
-		VCR_Read(ret, len);
+		VCR_Read( ret, len );
 	}
 	else
 	{
 		ret = GetCommandLine();
 
-		if(g_VCRMode == VCR_Record)
+		if (g_VCRMode == VCR_Record)
 		{
-			len = strlen(ret) + 1;
-			VCR_WriteVal(len);
-			VCR_Write(ret, len);
+			len = strlen( ret ) + 1;
+			VCR_WriteVal( len );
+			VCR_Write( ret, len );
 		}
 	}
-	
+
 	return ret;
 }
 
 
-static long VCR_Hook_RegOpenKeyEx( void *hKey, const char *lpSubKey, unsigned long ulOptions, unsigned long samDesired, void *pHKey )
+static long VCR_Hook_RegOpenKeyEx( void* hKey, const char* lpSubKey, unsigned long ulOptions, unsigned long samDesired, void* pHKey )
 {
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() )
-		return RegOpenKeyEx( (HKEY)hKey, lpSubKey, ulOptions, samDesired, (PHKEY)pHKey );
+	if (!IsVCRModeEnabledForThisThread())
+		return RegOpenKeyEx( (HKEY) hKey, lpSubKey, ulOptions, samDesired, (PHKEY) pHKey );
 
 	VCR_THREADSAFE;
-	VCR_Event(VCREvent_RegOpenKeyEx);
+	VCR_Event( VCREvent_RegOpenKeyEx );
 
 	long ret;
-	if(g_VCRMode == VCR_Playback)
+	if (g_VCRMode == VCR_Playback)
 	{
-		VCR_ReadVal(ret); // (don't actually write anything to the person's registry when playing back).
+		VCR_ReadVal( ret ); // (don't actually write anything to the person's registry when playing back).
 	}
 	else
 	{
-		ret = RegOpenKeyEx( (HKEY)hKey, lpSubKey, ulOptions, samDesired, (PHKEY)pHKey );
+		ret = RegOpenKeyEx( (HKEY) hKey, lpSubKey, ulOptions, samDesired, (PHKEY) pHKey );
 
-		if(g_VCRMode == VCR_Record)
-			VCR_WriteVal(ret);
+		if (g_VCRMode == VCR_Record)
+			VCR_WriteVal( ret );
 	}
 
 	return ret;
 }
 
 
-static long VCR_Hook_RegSetValueEx(void *hKey, tchar const *lpValueName, unsigned long Reserved, unsigned long dwType, unsigned char const *lpData, unsigned long cbData)
+static long VCR_Hook_RegSetValueEx( void* hKey, tchar const* lpValueName, unsigned long Reserved, unsigned long dwType, unsigned char const* lpData, unsigned long cbData )
 {
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() )
-		return RegSetValueEx((HKEY)hKey, lpValueName, Reserved, dwType, lpData, cbData);
+	if (!IsVCRModeEnabledForThisThread())
+		return RegSetValueEx( (HKEY) hKey, lpValueName, Reserved, dwType, lpData, cbData );
 
 	VCR_THREADSAFE;
-	VCR_Event(VCREvent_RegSetValueEx);
+	VCR_Event( VCREvent_RegSetValueEx );
 
 	long ret;
-	if(g_VCRMode == VCR_Playback)
+	if (g_VCRMode == VCR_Playback)
 	{
-		VCR_ReadVal(ret); // (don't actually write anything to the person's registry when playing back).
+		VCR_ReadVal( ret ); // (don't actually write anything to the person's registry when playing back).
 	}
 	else
 	{
-		ret = RegSetValueEx((HKEY)hKey, lpValueName, Reserved, dwType, lpData, cbData);
+		ret = RegSetValueEx( (HKEY) hKey, lpValueName, Reserved, dwType, lpData, cbData );
 
-		if(g_VCRMode == VCR_Record)
-			VCR_WriteVal(ret);
+		if (g_VCRMode == VCR_Record)
+			VCR_WriteVal( ret );
 	}
 
 	return ret;
 }
 
 
-static long VCR_Hook_RegQueryValueEx(void *hKey, tchar const *lpValueName, unsigned long *lpReserved, unsigned long *lpType, unsigned char *lpData, unsigned long *lpcbData)
+static long VCR_Hook_RegQueryValueEx( void* hKey, tchar const* lpValueName, unsigned long* lpReserved, unsigned long* lpType, unsigned char* lpData, unsigned long* lpcbData )
 {
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() )
-		return RegQueryValueEx((HKEY)hKey, lpValueName, lpReserved, lpType, lpData, lpcbData);
+	if (!IsVCRModeEnabledForThisThread())
+		return RegQueryValueEx( (HKEY) hKey, lpValueName, lpReserved, lpType, lpData, lpcbData );
 
 	VCR_THREADSAFE;
-	VCR_Event(VCREvent_RegQueryValueEx);
+	VCR_Event( VCREvent_RegQueryValueEx );
 
 	// Doesn't support this being null right now (although it would be trivial to add support).
-	assert(lpData);
-	
+	assert( lpData );
+
 	long ret;
 	unsigned long dummy = 0;
-	if(g_VCRMode == VCR_Playback)
+	if (g_VCRMode == VCR_Playback)
 	{
-		VCR_ReadVal(ret);
-		VCR_ReadVal(lpType ? *lpType : dummy);
-		VCR_ReadVal(*lpcbData);
-		VCR_Read(lpData, *lpcbData);
+		VCR_ReadVal( ret );
+		VCR_ReadVal( lpType ? *lpType : dummy );
+		VCR_ReadVal( *lpcbData );
+		VCR_Read( lpData, *lpcbData );
 	}
 	else
 	{
-		ret = RegQueryValueEx((HKEY)hKey, lpValueName, lpReserved, lpType, lpData, lpcbData);
+		ret = RegQueryValueEx( (HKEY) hKey, lpValueName, lpReserved, lpType, lpData, lpcbData );
 
-		if(g_VCRMode == VCR_Record)
+		if (g_VCRMode == VCR_Record)
 		{
-			VCR_WriteVal(ret);
-			VCR_WriteVal(lpType ? *lpType : dummy);
-			VCR_WriteVal(*lpcbData);
-			VCR_Write(lpData, *lpcbData);
+			VCR_WriteVal( ret );
+			VCR_WriteVal( lpType ? *lpType : dummy );
+			VCR_WriteVal( *lpcbData );
+			VCR_Write( lpData, *lpcbData );
 		}
 	}
 
@@ -1099,75 +1099,75 @@ static long VCR_Hook_RegQueryValueEx(void *hKey, tchar const *lpValueName, unsig
 }
 
 
-static long VCR_Hook_RegCreateKeyEx(void *hKey, char const *lpSubKey, unsigned long Reserved, char *lpClass, unsigned long dwOptions, 
-	unsigned long samDesired, void *lpSecurityAttributes, void *phkResult, unsigned long *lpdwDisposition)
+static long VCR_Hook_RegCreateKeyEx( void* hKey, char const* lpSubKey, unsigned long Reserved, char* lpClass, unsigned long dwOptions,
+									 unsigned long samDesired, void* lpSecurityAttributes, void* phkResult, unsigned long* lpdwDisposition )
 {
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() )
-		return RegCreateKeyEx((HKEY)hKey, lpSubKey, Reserved, lpClass, dwOptions, samDesired, (LPSECURITY_ATTRIBUTES)lpSecurityAttributes, (HKEY*)phkResult, lpdwDisposition);
+	if (!IsVCRModeEnabledForThisThread())
+		return RegCreateKeyEx( (HKEY) hKey, lpSubKey, Reserved, lpClass, dwOptions, samDesired, (LPSECURITY_ATTRIBUTES) lpSecurityAttributes, (HKEY*) phkResult, lpdwDisposition );
 
 	VCR_THREADSAFE;
-	VCR_Event(VCREvent_RegCreateKeyEx);
+	VCR_Event( VCREvent_RegCreateKeyEx );
 
 	long ret;
-	if(g_VCRMode == VCR_Playback)
+	if (g_VCRMode == VCR_Playback)
 	{
-		VCR_ReadVal(ret); // (don't actually write anything to the person's registry when playing back).
+		VCR_ReadVal( ret ); // (don't actually write anything to the person's registry when playing back).
 	}
 	else
 	{
-		ret = RegCreateKeyEx((HKEY)hKey, lpSubKey, Reserved, lpClass, dwOptions, samDesired, (LPSECURITY_ATTRIBUTES)lpSecurityAttributes, (HKEY*)phkResult, lpdwDisposition);
+		ret = RegCreateKeyEx( (HKEY) hKey, lpSubKey, Reserved, lpClass, dwOptions, samDesired, (LPSECURITY_ATTRIBUTES) lpSecurityAttributes, (HKEY*) phkResult, lpdwDisposition );
 
-		if(g_VCRMode == VCR_Record)
-			VCR_WriteVal(ret);
+		if (g_VCRMode == VCR_Record)
+			VCR_WriteVal( ret );
 	}
 
 	return ret;
 }
 
 
-static void VCR_Hook_RegCloseKey(void *hKey)
+static void VCR_Hook_RegCloseKey( void* hKey )
 {
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() )
+	if (!IsVCRModeEnabledForThisThread())
 	{
-		RegCloseKey( (HKEY)hKey );
+		RegCloseKey( (HKEY) hKey );
 		return;
 	}
 
 	VCR_THREADSAFE;
-	VCR_Event(VCREvent_RegCloseKey);
+	VCR_Event( VCREvent_RegCloseKey );
 
-	if(g_VCRMode == VCR_Playback)
+	if (g_VCRMode == VCR_Playback)
 	{
 	}
 	else
 	{
-		RegCloseKey((HKEY)hKey);
+		RegCloseKey( (HKEY) hKey );
 	}
 }
 
 
-int VCR_Hook_GetNumberOfConsoleInputEvents( void *hInput, unsigned long *pNumEvents )
+int VCR_Hook_GetNumberOfConsoleInputEvents( void* hInput, unsigned long* pNumEvents )
 {
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() )
-		return GetNumberOfConsoleInputEvents( (HANDLE)hInput, pNumEvents );
+	if (!IsVCRModeEnabledForThisThread())
+		return GetNumberOfConsoleInputEvents( (HANDLE) hInput, pNumEvents );
 
 	VCR_THREADSAFE;
 	VCR_Event( VCREvent_GetNumberOfConsoleInputEvents );
 
 	char ret;
-	if ( g_VCRMode == VCR_Playback )
+	if (g_VCRMode == VCR_Playback)
 	{
 		VCR_ReadVal( ret );
 		VCR_ReadVal( *pNumEvents );
 	}
 	else
 	{
-		ret = (char)GetNumberOfConsoleInputEvents( (HANDLE)hInput, pNumEvents );
+		ret = (char) GetNumberOfConsoleInputEvents( (HANDLE) hInput, pNumEvents );
 
-		if ( g_VCRMode == VCR_Record )
+		if (g_VCRMode == VCR_Record)
 		{
 			VCR_WriteVal( ret );
 			VCR_WriteVal( *pNumEvents );
@@ -1178,20 +1178,20 @@ int VCR_Hook_GetNumberOfConsoleInputEvents( void *hInput, unsigned long *pNumEve
 }
 
 
-int	VCR_Hook_ReadConsoleInput( void *hInput, void *pRecs, int nMaxRecs, unsigned long *pNumRead )
+int	VCR_Hook_ReadConsoleInput( void* hInput, void* pRecs, int nMaxRecs, unsigned long* pNumRead )
 {
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() )
-		return ReadConsoleInput( (HANDLE)hInput, (INPUT_RECORD*)pRecs, nMaxRecs, pNumRead );
+	if (!IsVCRModeEnabledForThisThread())
+		return ReadConsoleInput( (HANDLE) hInput, (INPUT_RECORD*) pRecs, nMaxRecs, pNumRead );
 
 	VCR_THREADSAFE;
 	VCR_Event( VCREvent_ReadConsoleInput );
 
 	char ret;
-	if ( g_VCRMode == VCR_Playback )
+	if (g_VCRMode == VCR_Playback)
 	{
 		VCR_ReadVal( ret );
-		if ( ret )
+		if (ret)
 		{
 			VCR_ReadVal( *pNumRead );
 			VCR_Read( pRecs, *pNumRead * sizeof( INPUT_RECORD ) );
@@ -1199,12 +1199,12 @@ int	VCR_Hook_ReadConsoleInput( void *hInput, void *pRecs, int nMaxRecs, unsigned
 	}
 	else
 	{
-		ret = (char)ReadConsoleInput( (HANDLE)hInput, (INPUT_RECORD*)pRecs, nMaxRecs, pNumRead );
+		ret = (char) ReadConsoleInput( (HANDLE) hInput, (INPUT_RECORD*) pRecs, nMaxRecs, pNumRead );
 
-		if ( g_VCRMode == VCR_Record )
+		if (g_VCRMode == VCR_Record)
 		{
 			VCR_WriteVal( ret );
-			if ( ret )
+			if (ret)
 			{
 				VCR_WriteVal( *pNumRead );
 				VCR_Write( pRecs, *pNumRead * sizeof( INPUT_RECORD ) );
@@ -1216,33 +1216,33 @@ int	VCR_Hook_ReadConsoleInput( void *hInput, void *pRecs, int nMaxRecs, unsigned
 }
 
 
-void VCR_Hook_LocalTime( struct tm *today )
+void VCR_Hook_LocalTime( struct tm* today )
 {
 	// We just provide a wrapper on this function so we can protect access to time() everywhere.
 	time_t ltime;
 	time( &ltime );
-	tm *pTime = localtime( &ltime );
+	tm* pTime = localtime( &ltime );
 	memcpy( today, pTime, sizeof( *today ) );
 
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() )
+	if (!IsVCRModeEnabledForThisThread())
 		return;
 
 	VCR_THREADSAFE;
-	
+
 	VCR_Event( VCREvent_LocalTime );
-	if ( g_VCRMode == VCR_Playback )
+	if (g_VCRMode == VCR_Playback)
 	{
 		VCR_Read( today, sizeof( *today ) );
 	}
-	else if ( g_VCRMode == VCR_Record )
+	else if (g_VCRMode == VCR_Record)
 	{
 		VCR_Write( today, sizeof( *today ) );
 	}
 }
 
 
-void VCR_Hook_Time( long *today )
+void VCR_Hook_Time( long* today )
 {
 	// We just provide a wrapper on this function so we can protect access to time() everywhere.
 	// NOTE: For 64-bit systems we should eventually get a function that takes a time_t, but we should have
@@ -1251,46 +1251,46 @@ void VCR_Hook_Time( long *today )
 	time( &curTime );
 
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() )
+	if (!IsVCRModeEnabledForThisThread())
 	{
-		*today = (long)curTime;
+		*today = (long) curTime;
 		return;
 	}
 
 	VCR_THREADSAFE;
-	
+
 	VCR_Event( VCREvent_Time );
-	if ( g_VCRMode == VCR_Playback )
+	if (g_VCRMode == VCR_Playback)
 	{
 		VCR_Read( &curTime, sizeof( curTime ) );
 	}
-	else if ( g_VCRMode == VCR_Record )
+	else if (g_VCRMode == VCR_Record)
 	{
 		VCR_Write( &curTime, sizeof( curTime ) );
 	}
-	
-	*today = (long)curTime;
+
+	*today = (long) curTime;
 }
 
 
 short VCR_Hook_GetKeyState( int nVirtKey )
 {
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() )
+	if (!IsVCRModeEnabledForThisThread())
 		return ::GetKeyState( nVirtKey );
 
 	VCR_THREADSAFE;
 	VCR_Event( VCREvent_GetKeyState );
 
 	short ret;
-	if ( g_VCRMode == VCR_Playback )
+	if (g_VCRMode == VCR_Playback)
 	{
 		VCR_ReadVal( ret );
 	}
 	else
 	{
 		ret = ::GetKeyState( nVirtKey );
-		if ( g_VCRMode == VCR_Record )
+		if (g_VCRMode == VCR_Record)
 			VCR_WriteVal( ret );
 	}
 
@@ -1298,43 +1298,43 @@ short VCR_Hook_GetKeyState( int nVirtKey )
 }
 
 
-void VCR_GenericRecord( const char *pEventName, const void *pData, int len )
+void VCR_GenericRecord( const char* pEventName, const void* pData, int len )
 {
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() )
+	if (!IsVCRModeEnabledForThisThread())
 		return;
 
 	VCR_THREADSAFE;
 	VCR_Event( VCREvent_Generic );
 
-	if ( g_VCRMode != VCR_Record )
+	if (g_VCRMode != VCR_Record)
 		Error( "VCR_GenericRecord( %s ): not recording a VCR file", pEventName );
 
 	// Write the event name (or 255 if none).
 	int nameLen = 255;
-	if ( pEventName )
+	if (pEventName)
 	{
 		nameLen = strlen( pEventName ) + 1;
-		if ( nameLen >= 255 )
+		if (nameLen >= 255)
 		{
 			VCR_Error( "VCR_GenericRecord( %s ): nameLen too long (%d)", pEventName, nameLen );
 			return;
 		}
 	}
-	unsigned char ucNameLen = (unsigned char)nameLen;
+	unsigned char ucNameLen = (unsigned char) nameLen;
 	VCR_WriteVal( ucNameLen );
 	VCR_Write( pEventName, ucNameLen );
 
 	// Write the data.
 	VCR_WriteVal( len );
 	VCR_Write( pData, len );
-}	
+}
 
 
-int VCR_GenericPlaybackInternal( const char *pEventName, void *pOutData, int maxLen, bool bForceSameLen, bool bForceSameContents )
+int VCR_GenericPlaybackInternal( const char* pEventName, void* pOutData, int maxLen, bool bForceSameLen, bool bForceSameContents )
 {
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() || g_VCRMode != VCR_Playback )
+	if (!IsVCRModeEnabledForThisThread() || g_VCRMode != VCR_Playback)
 		Error( "VCR_Playback( %s ): not playing back a VCR file", pEventName );
 
 	VCR_THREADSAFE;
@@ -1342,11 +1342,11 @@ int VCR_GenericPlaybackInternal( const char *pEventName, void *pOutData, int max
 
 	unsigned char nameLen;
 	VCR_ReadVal( nameLen );
-	if ( nameLen != 255 )
+	if (nameLen != 255)
 	{
 		char testName[512];
 		VCR_Read( testName, nameLen );
-		if ( strcmp( pEventName, testName ) != 0 )
+		if (strcmp( pEventName, testName ) != 0)
 		{
 			VCR_Error( "VCR_GenericPlayback( %s ) - event name does not match '%s'", pEventName, testName );
 			return 0;
@@ -1355,33 +1355,33 @@ int VCR_GenericPlaybackInternal( const char *pEventName, void *pOutData, int max
 
 	int dataLen;
 	VCR_ReadVal( dataLen );
-	if ( dataLen > maxLen )
+	if (dataLen > maxLen)
 	{
 		VCR_Error( "VCR_GenericPlayback( %s ) - generic data too long (greater than maxLen: %d)", pEventName, maxLen );
 		return 0;
 	}
-	else if ( bForceSameLen && dataLen != maxLen )
+	else if (bForceSameLen && dataLen != maxLen)
 	{
 		VCR_Error( "VCR_GenericPlayback( %s ) - data size in file (%d) different than desired (%d)", pEventName, dataLen, maxLen );
 		return 0;
 	}
 
-	if ( bForceSameContents )
+	if (bForceSameContents)
 	{
-		if ( !bForceSameLen )
+		if (!bForceSameLen)
 			Error( "bForceSameContents and !bForceSameLen not allowed." );
 
-		static char *pTempData = new char[dataLen];
+		static char* pTempData = new char[dataLen];
 		static int tempDataLen = dataLen;
-		if ( tempDataLen < dataLen )
+		if (tempDataLen < dataLen)
 		{
-			delete [] pTempData;
+			delete[] pTempData;
 			pTempData = new char[dataLen];
 			tempDataLen = dataLen;
 		}
-		
+
 		VCR_Read( pTempData, dataLen );
-		if ( memcmp( pTempData, pOutData, dataLen ) != 0 )
+		if (memcmp( pTempData, pOutData, dataLen ) != 0)
 		{
 			VCR_Error( "VCR_GenericPlayback: data doesn't match on playback." );
 		}
@@ -1395,107 +1395,107 @@ int VCR_GenericPlaybackInternal( const char *pEventName, void *pOutData, int max
 }
 
 
-int VCR_GenericPlayback( const char *pEventName, void *pOutData, int maxLen, bool bForceSameLen )
+int VCR_GenericPlayback( const char* pEventName, void* pOutData, int maxLen, bool bForceSameLen )
 {
 	return VCR_GenericPlaybackInternal( pEventName, pOutData, maxLen, bForceSameLen, false );
 }
 
 
-void VCR_GenericValue( const char *pEventName, void *pData, int maxLen )
+void VCR_GenericValue( const char* pEventName, void* pData, int maxLen )
 {
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() )
+	if (!IsVCRModeEnabledForThisThread())
 		return;
 
-	if ( !pEventName )
+	if (!pEventName)
 		pEventName = "";
-	
-	if ( g_VCRMode == VCR_Record )
+
+	if (g_VCRMode == VCR_Record)
 		VCR_GenericRecord( pEventName, pData, maxLen );
-	else if ( g_VCRMode == VCR_Playback )
+	else if (g_VCRMode == VCR_Playback)
 		VCR_GenericPlaybackInternal( pEventName, pData, maxLen, true, false );
 }
 
 
-void VCR_GenericValueVerify( const tchar *pEventName, const void *pData, int maxLen )
+void VCR_GenericValueVerify( const tchar* pEventName, const void* pData, int maxLen )
 {
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() )
+	if (!IsVCRModeEnabledForThisThread())
 		return;
 
-	if ( !pEventName )
+	if (!pEventName)
 		pEventName = "";
-	
-	if ( g_VCRMode == VCR_Record )
+
+	if (g_VCRMode == VCR_Record)
 		VCR_GenericRecord( pEventName, pData, maxLen );
-	else if ( g_VCRMode == VCR_Playback )
-		VCR_GenericPlaybackInternal( pEventName, (void*)pData, maxLen, true, true );
+	else if (g_VCRMode == VCR_Playback)
+		VCR_GenericPlaybackInternal( pEventName, (void*) pData, maxLen, true, true );
 }
 
 
-void WriteShortString( const char *pStr )
+void WriteShortString( const char* pStr )
 {
 	int len = strlen( pStr ) + 1;
-	if ( len >= 0xFFFF )
+	if (len >= 0xFFFF)
 	{
 		Error( "VCR_WriteShortString, string too long (%d characters).", len );
 	}
 
-	unsigned short twobytes = (unsigned short)len;
+	unsigned short twobytes = (unsigned short) len;
 	VCR_WriteVal( twobytes );
 	VCR_Write( pStr, len );
 }
 
 
-void ReadAndVerifyShortString( const char *pStr )
+void ReadAndVerifyShortString( const char* pStr )
 {
 	int len = strlen( pStr ) + 1;
 
 	unsigned short incomingSize;
 	VCR_ReadVal( incomingSize );
 
-	if ( incomingSize != len )
+	if (incomingSize != len)
 		VCR_Error( "ReadAndVerifyShortString (%s), lengths different.", pStr );
 
-	static char *pTempData = 0;
+	static char* pTempData = 0;
 	static int tempDataLen = 0;
-	if ( tempDataLen < len )
+	if (tempDataLen < len)
 	{
-		delete [] pTempData;
+		delete[] pTempData;
 		pTempData = new char[len];
 		tempDataLen = len;
 	}
 
 	VCR_Read( pTempData, len );
-	if ( memcmp( pTempData, pStr, len ) != 0 )
+	if (memcmp( pTempData, pStr, len ) != 0)
 	{
 		VCR_Error( "ReadAndVerifyShortString: strings different ('%s' vs '%s').", pStr, pTempData );
 	}
 }
 
 
-void VCR_GenericRecordString( const char *pEventName, const char *pString )
+void VCR_GenericRecordString( const char* pEventName, const char* pString )
 {
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() )
+	if (!IsVCRModeEnabledForThisThread())
 		return;
 
 	VCR_THREADSAFE;
 	VCR_Event( VCREvent_GenericString );
 
-	if ( g_VCRMode != VCR_Record )
+	if (g_VCRMode != VCR_Record)
 		Error( "VCR_GenericRecordString( %s ): not recording a VCR file", pEventName );
 
 	// Write the event name (or 255 if none).
 	WriteShortString( pEventName );
 	WriteShortString( pString );
-}	
+}
 
 
-void VCR_GenericPlaybackString( const char *pEventName, const char *pString )
+void VCR_GenericPlaybackString( const char* pEventName, const char* pString )
 {
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() || g_VCRMode != VCR_Playback )
+	if (!IsVCRModeEnabledForThisThread() || g_VCRMode != VCR_Playback)
 		Error( "VCR_GenericPlaybackString( %s ): not playing back a VCR file", pEventName );
 
 	VCR_THREADSAFE;
@@ -1506,30 +1506,30 @@ void VCR_GenericPlaybackString( const char *pEventName, const char *pString )
 }
 
 
-void VCR_GenericString( const char *pEventName, const char *pString )
+void VCR_GenericString( const char* pEventName, const char* pString )
 {
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() )
+	if (!IsVCRModeEnabledForThisThread())
 		return;
 
-	if ( !pEventName )
+	if (!pEventName)
 		pEventName = "";
 
-	if ( !pString )
+	if (!pString)
 		pString = "";
 
-	if ( g_VCRMode == VCR_Record )
+	if (g_VCRMode == VCR_Record)
 		VCR_GenericRecordString( pEventName, pString );
-	else if ( g_VCRMode == VCR_Playback )
+	else if (g_VCRMode == VCR_Playback)
 		VCR_GenericPlaybackString( pEventName, pString );
 }
 
 
 double VCR_GetPercentCompleted()
 {
-	if ( g_VCRMode == VCR_Playback )
+	if (g_VCRMode == VCR_Playback)
 	{
-		return (double)g_CurFilePos / g_FileLen;
+		return (double) g_CurFilePos / g_FileLen;
 	}
 	else
 	{
@@ -1537,13 +1537,13 @@ double VCR_GetPercentCompleted()
 	}
 }
 
-void* VCR_CreateThread( 
-	void *lpThreadAttributes,
+void* VCR_CreateThread(
+	void* lpThreadAttributes,
 	unsigned long dwStackSize,
-	void *lpStartAddress,
-	void *lpParameter,
+	void* lpStartAddress,
+	void* lpParameter,
 	unsigned long dwCreationFlags,
-    uintp *lpThreadID )
+	uintp* lpThreadID )
 {
 	unsigned dwThreadID = 0;
 
@@ -1551,19 +1551,19 @@ void* VCR_CreateThread(
 	// correctly, and is safer than _beginthread. See MSDN.
 
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() )
+	if (!IsVCRModeEnabledForThisThread())
 	{
-		if ( g_VCRMode == VCR_Disabled )
+		if (g_VCRMode == VCR_Disabled)
 		{
-			HANDLE hThread = (void *)_beginthreadex( 
-				(LPSECURITY_ATTRIBUTES)lpThreadAttributes,
+			HANDLE hThread = (void*) _beginthreadex(
+				(LPSECURITY_ATTRIBUTES) lpThreadAttributes,
 				dwStackSize,
-				(unsigned (__stdcall *) (void *))lpStartAddress,
+				(unsigned( __stdcall* ) (void*))lpStartAddress,
 				lpParameter,
 				dwCreationFlags,
 				&dwThreadID );
 
-			if ( lpThreadID )
+			if (lpThreadID)
 				*lpThreadID = dwThreadID;
 
 			return hThread;
@@ -1573,14 +1573,14 @@ void* VCR_CreateThread(
 			Error( "VCR_CreateThread: VCR mode disabled in calling thread." );
 		}
 	}
-	
+
 	// We could make this work without too much pain.
-	if ( GetCurrentThreadId() != g_VCRMainThreadID )
+	if (GetCurrentThreadId() != g_VCRMainThreadID)
 	{
 		Error( "VCR_CreateThread called outside main thread." );
 	}
 
-	if ( g_nVCRThreads >= MAX_VCR_THREADS )
+	if (g_nVCRThreads >= MAX_VCR_THREADS)
 	{
 		// This is easy to fix if we ever hit it.. just allow more threads.
 		Error( "VCR_CreateThread: g_nVCRThreads >= MAX_VCR_THREADS." );
@@ -1591,21 +1591,21 @@ void* VCR_CreateThread(
 	VCR_Event( VCREvent_CreateThread );
 
 	// Create the thread.
-	HANDLE hThread = (void*)_beginthreadex( 
-		(LPSECURITY_ATTRIBUTES)lpThreadAttributes,
+	HANDLE hThread = (void*) _beginthreadex(
+		(LPSECURITY_ATTRIBUTES) lpThreadAttributes,
 		dwStackSize,
-		(unsigned (__stdcall *) (void *))lpStartAddress,
+		(unsigned( __stdcall* ) (void*))lpStartAddress,
 		lpParameter,
 		dwCreationFlags | CREATE_SUSPENDED,
 		&dwThreadID );
 
-	if ( lpThreadID )
+	if (lpThreadID)
 		*lpThreadID = dwThreadID;
 
-	if ( !hThread )
+	if (!hThread)
 	{
 		// We don't handle this case in VCR mode (but we could pretty easily).
-		if ( g_VCRMode == VCR_Playback || g_VCRMode == VCR_Record )
+		if (g_VCRMode == VCR_Playback || g_VCRMode == VCR_Record)
 			Error( "VCR_CreateThread: CreateThread() failed." );
 
 		return NULL;
@@ -1618,7 +1618,7 @@ void* VCR_CreateThread(
 	g_pVCRThreads[iNewThread].m_bEnabled = true;
 
 	// Now resume the thread.
-	if ( !( dwCreationFlags & CREATE_SUSPENDED ) )
+	if (!(dwCreationFlags & CREATE_SUSPENDED))
 	{
 		ResumeThread( hThread );
 	}
@@ -1628,42 +1628,42 @@ void* VCR_CreateThread(
 
 
 unsigned long VCR_WaitForSingleObject(
-	void *handle,
+	void* handle,
 	unsigned long dwMilliseconds )
 {
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() )
+	if (!IsVCRModeEnabledForThisThread())
 		return Wrap_WaitForSingleObject( handle, dwMilliseconds );
 		//Error( "VCR_WaitForSingleObject: VCR mode disabled in calling thread." );
 
 	// We have to do the wait here BEFORE we acquire the VCR mutex, otherwise, we could freeze
 	// the thread that's supposed to signal "handle".
 	unsigned long ret = 0;
-	if ( g_VCRMode == VCR_Record )
+	if (g_VCRMode == VCR_Record)
 	{
-		 ret = Wrap_WaitForSingleObject( handle, dwMilliseconds );
+		ret = Wrap_WaitForSingleObject( handle, dwMilliseconds );
 	}
 
 	VCR_THREADSAFE;
 	VCR_Event( VCREvent_WaitForSingleObject );
 
 	char val = 1;
-	if ( g_VCRMode == VCR_Record )
+	if (g_VCRMode == VCR_Record)
 	{
-		if ( ret == WAIT_ABANDONED )
+		if (ret == WAIT_ABANDONED)
 			val = 2;
-		else if ( ret == WAIT_TIMEOUT )
+		else if (ret == WAIT_TIMEOUT)
 			val = 3;
 
-		VCR_WriteVal( val );		
+		VCR_WriteVal( val );
 		return ret;
 	}
 	else
 	{
 		Assert( g_VCRMode == VCR_Playback );
-		
+
 		VCR_ReadVal( val );
-		if ( val == 1 )
+		if (val == 1)
 		{
 			// Hack job.. let other threads start reading events now.. we're basically saying here that we're 
 			// finished reading our VCR event. If we didn't pass the buck onto the next one, if the event hadn't
@@ -1672,7 +1672,7 @@ unsigned long VCR_WaitForSingleObject(
 
 			// If it wrote 1, then we know that this call has to signal the object, so just wait until it gets signalled.
 			ret = Wrap_WaitForSingleObject( handle, INFINITE );
-			if ( ret == WAIT_ABANDONED || ret == WAIT_TIMEOUT )
+			if (ret == WAIT_ABANDONED || ret == WAIT_TIMEOUT)
 			{
 				Error( "VCR_WaitForSingleObject: got inconsistent value on playback." );
 			}
@@ -1687,10 +1687,10 @@ unsigned long VCR_WaitForSingleObject(
 	}
 }
 
-unsigned long VCR_WaitForMultipleObjects( uint32 nHandles, const void **pHandles, int bWaitAll, uint32 timeout )
+unsigned long VCR_WaitForMultipleObjects( uint32 nHandles, const void** pHandles, int bWaitAll, uint32 timeout )
 {
 	// Preamble.
-	if ( !IsVCRModeEnabledForThisThread() )
+	if (!IsVCRModeEnabledForThisThread())
 		return Wrap_WaitForMultipleObjects( nHandles, pHandles, bWaitAll, timeout );
 
 	// TODO:
@@ -1698,26 +1698,26 @@ unsigned long VCR_WaitForMultipleObjects( uint32 nHandles, const void **pHandles
 	return 0;
 }
 
-void VCR_EnterCriticalSection( void *pInputCS )
+void VCR_EnterCriticalSection( void* pInputCS )
 {
-	CRITICAL_SECTION *pCS = (CRITICAL_SECTION*)pInputCS;
+	CRITICAL_SECTION* pCS = (CRITICAL_SECTION*) pInputCS;
 
-	if ( !IsVCRModeEnabledForThisThread() )
+	if (!IsVCRModeEnabledForThisThread())
 	{
 		Wrap_EnterCriticalSection( pCS );
 		return;
 	}
 
 	// While recording, let's get the critical section first.
-	if ( g_VCRMode == VCR_Record )
+	if (g_VCRMode == VCR_Record)
 	{
-		 Wrap_EnterCriticalSection( pCS );
+		Wrap_EnterCriticalSection( pCS );
 	}
 
 	VCR_THREADSAFE;
 	VCR_Event( VCREvent_EnterCriticalSection );
 
-	if ( g_VCRMode == VCR_Playback )
+	if (g_VCRMode == VCR_Playback)
 	{
 		// When playing back, we want to grab the CS -after- the event has been read out, because it means that
 		// we're the only thread that is at this spot now. If we tried to grab the CS before calling VCR_Event,
@@ -1773,6 +1773,6 @@ VCR_t g_VCR =
 	VCR_WaitForMultipleObjects,
 };
 
-VCR_t *g_pVCR = &g_VCR;
+VCR_t* g_pVCR = &g_VCR;
 
 #endif // NO_VCR

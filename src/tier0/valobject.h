@@ -19,25 +19,25 @@ class CValObject
 {
 public:
 	// Constructors & destructors
-	CValObject( void ) { };
+	CValObject( void ) {};
 	~CValObject( void );
 
-	void Init( tchar *pchType, void *pvObj, tchar *pchName, CValObject *pValObjectParent,
-		CValObject *pValObjectPrev );
+	void Init( tchar* pchType, void* pvObj, tchar* pchName, CValObject* pValObjectParent,
+			   CValObject* pValObjectPrev );
 
-	// Our object has claimed ownership of a memory block
-	void ClaimMemoryBlock( void *pvMem );
+		   // Our object has claimed ownership of a memory block
+	void ClaimMemoryBlock( void* pvMem );
 
 	// A child of ours has claimed ownership of a memory block
 	void ClaimChildMemoryBlock( int cubUser );
 
 	// Accessors
-	tchar *PchType( void ) { return m_rgchType; };
-	void *PvObj( void ) { return m_pvObj; };
-	tchar *PchName( void ) { return m_rgchName; };
-	CValObject *PValObjectParent( void ) { return m_pValObjectParent; };
+	tchar* PchType( void ) { return m_rgchType; };
+	void* PvObj( void ) { return m_pvObj; };
+	tchar* PchName( void ) { return m_rgchName; };
+	CValObject* PValObjectParent( void ) { return m_pValObjectParent; };
 	int NLevel( void ) { return m_nLevel; };
-	CValObject *PValObjectNext( void ) { return m_pValObjectNext; };
+	CValObject* PValObjectNext( void ) { return m_pValObjectNext; };
 	int CpubMemSelf( void ) { return m_cpubMemSelf; };
 	int CubMemSelf( void ) { return m_cubMemSelf; };
 	int CpubMemTree( void ) { return m_cpubMemTree; };
@@ -51,12 +51,12 @@ private:
 	bool  m_bNewSinceSnapshot;				// If this block is new since the snapshot.
 	tchar m_rgchType[64];					// Type of the object we represent
 	tchar m_rgchName[64];					// Name of this particular object
-	void *m_pvObj;							// Pointer to the object we represent
+	void* m_pvObj;							// Pointer to the object we represent
 
-	CValObject *m_pValObjectParent;			// Our parent object in the tree.
+	CValObject* m_pValObjectParent;			// Our parent object in the tree.
 	int m_nLevel;							// Our depth in the tree
 
-	CValObject *m_pValObjectNext;			// Next ValObject in the linked list
+	CValObject* m_pValObjectNext;			// Next ValObject in the linked list
 
 	int m_cpubMemSelf;						// # of memory blocks we own directly
 	int m_cubMemSelf;						// Total size of the memory blocks we own directly
