@@ -9,7 +9,7 @@
 #include "../game/shared/choreochannel.h"
 #include "../game/shared/choreoevent.h"
 #include "../game/shared/iscenetokenprocessor.h"
-#include "characterset.h"
+#include "tier1/characterset.h"
 
 
 //-----------------------------------------------------------------------------

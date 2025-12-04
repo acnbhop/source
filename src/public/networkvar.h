@@ -12,7 +12,7 @@
 
 
 #include "tier0/dbg.h"
-#include "convar.h"
+#include "tier1/convar.h"
 
 #if defined( CLIENT_DLL ) || defined( GAME_DLL )
 	#include "basehandle.h"
